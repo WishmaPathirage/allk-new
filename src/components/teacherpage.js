@@ -1,24 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Teacher1 from '../assets/ET.webp';
-import Teacher2 from '../assets/SFT.webp';
-import Teacher3 from '../assets/ACCOUNTING.webp';
+//import Teacher1 from '../assets/ET.webp';
+//import Teacher2 from '../assets/SFT.webp';
+//import Teacher3 from '../assets/ACCOUNTING.webp';
 import Teacher4 from '../assets/ECON.webp';
 import Teacher5 from '../assets/GEOGRAPHY.webp';
-import Teacher6 from '../assets/ICT.webp'
-import Teacher7 from '../assets/BS.webp'
+//import Teacher6 from '../assets/ICT.webp'
+//import Teacher7 from '../assets/BS.webp'
 import Teacher8 from '../assets/POLITICAL.webp'
 import Teacher9 from '../assets/MEDIA.webp'
 import Teacher10 from '../assets/SINHALA.webp'
 
 const teachers = [
-  { name: 'Mr. Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology', img: Teacher1 },
-  { name: 'Mr. Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology', img: Teacher2 },
-  { name: 'Mr. Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce',   img: Teacher3 },
+  //{ name: 'Mr. Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology', img: Teacher1 },
+  //{ name: 'Mr. Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology', img: Teacher2 },
+  //{ name: 'Mr. Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce',   img: Teacher3 },
   { name: 'Mr. Harsha Amarakon',         subject: 'Economics',              stream: 'Commerce',   img: Teacher4 },
   { name: 'Mr. Sameera Ekanayake',       subject: 'Geography',              stream: 'Arts',       img: Teacher5 },
-  { name: 'Mr. Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology', img: Teacher6 },
-  { name: 'Mr. Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce',   img: Teacher7 },
+  //{ name: 'Mr. Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology', img: Teacher6 },
+  //{ name: 'Mr. Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce',   img: Teacher7 },
   { name: 'Mr. Amila Nishan Pitiduwa',   subject: 'Political Science',      stream: 'Arts',       img: Teacher8 },
   { name: 'Mr. Praveen Kumarage',        subject: 'Media',                  stream: 'Arts',       img: Teacher9 },
   { name: 'Mr. Pathum Sandanuwan',       subject: 'Sinhala',                stream: 'Arts',       img: Teacher10 },

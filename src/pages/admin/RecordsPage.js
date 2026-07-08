@@ -4,11 +4,11 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { db, storage } from '../../services/firebase';
 
 const ALL_TEACHERS = [
-  { id: 'et',         name: 'Sandeepa Kathriarachchi',                      subject: 'Engineering Technology', stream: 'Technology' },
-  { id: 'sft',        name: 'Shanaka Ranathunga',                           subject: 'Science for Technology', stream: 'Technology' },
-  { id: 'ict',        name: 'Ranishan Dissanayake',                         subject: 'ICT',                    stream: 'Technology' },
-  { id: 'bs',         name: 'Kasun Weligama',                               subject: 'Business Studies',       stream: 'Commerce'   },
-  { id: 'accounting', name: 'Prabhath Ariyasinghe',                         subject: 'Accounting',             stream: 'Commerce'   },
+  // { id: 'et',         name: 'Sandeepa Kathriarachchi',                      subject: 'Engineering Technology', stream: 'Technology' },
+  // { id: 'sft',        name: 'Shanaka Ranathunga',                           subject: 'Science for Technology', stream: 'Technology' },
+  // { id: 'ict',        name: 'Ranishan Dissanayake',                         subject: 'ICT',                    stream: 'Technology' },
+  // { id: 'bs',         name: 'Kasun Weligama',                               subject: 'Business Studies',       stream: 'Commerce'   },
+  // { id: 'accounting', name: 'Prabhath Ariyasinghe',                         subject: 'Accounting',             stream: 'Commerce'   },
   { id: 'econ',       name: 'Harsha Amarakon',                              subject: 'Economics',              stream: 'Commerce'   },
   { id: 'geo',        name: 'Sameera Ekanayake',                            subject: 'Geography',              stream: 'Arts'       },
   { id: 'political',  name: 'Amila Nishan Pitiduwa',                        subject: 'Political Science',      stream: 'Arts'       },
