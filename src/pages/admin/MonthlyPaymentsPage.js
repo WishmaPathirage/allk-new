@@ -21,6 +21,8 @@ const fmtMonth = (val) => {
 
 const STREAM_COLORS = { Technology: '#2680c7', Commerce: '#27956b', Arts: '#c9720c' };
 const STREAM_BG     = { Technology: '#e8f4fd', Commerce: '#e8f8f0', Arts: '#fdf0e8' };
+const HIDDEN_TEACHER_IDS = new Set(['et', 'sft', 'ict', 'bs', 'accounting']);
+const isVisibleTeacher = (teacher) => !HIDDEN_TEACHER_IDS.has(teacher?.id ?? teacher);
 
 const TYPE_OPTS = ['Paper', 'Tutes'];
 const typeCfg = (type) => type === 'Paper'
@@ -223,11 +225,11 @@ function DetailModal({ payment, onClose, onApprove, onReject, onSetType }) {
             ))}
           </div>
 
-          {payment.selectedTeachers?.length > 0 && (
+          {payment.selectedTeachers?.filter(isVisibleTeacher).length > 0 && (
             <div style={{ background: '#fafafa', border: '1.5px solid #eee', borderRadius: 11, padding: '12px 15px', marginBottom: 18 }}>
               <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#bbb', marginBottom: 10 }}>Paying For</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {payment.selectedTeachers.map((t, idx) => {
+                {payment.selectedTeachers.filter(isVisibleTeacher).map((t, idx) => {
                   const key = t?.id || idx;
                   const label = t?.subject || t?.name || (typeof t === 'string' ? t : '—');
                   const bg = STREAM_BG[t?.stream] || '#f4f4f4';
@@ -276,7 +278,7 @@ function downloadPDF(students, monthLabel) {
     pages.push(students.slice(i, i + PER_PAGE));
 
   const cardHTML = (s, idx) => {
-    const subjects  = (s.selectedTeachers || []).map(t => t?.subject || t?.name || (typeof t === 'string' ? t : '')).filter(Boolean).join(', ') || '—';
+    const subjects  = (s.selectedTeachers || []).filter(isVisibleTeacher).map(t => t?.subject || t?.name || (typeof t === 'string' ? t : '')).filter(Boolean).join(', ') || '—';
     const c         = s.paymentType === 'Both' ? { bg: '#f0eafd', color: '#7c3aed' } : typeCfg(s.paymentType);
     const typeLabel = s.paymentType === 'Both' ? 'Paper + Tutes' : s.paymentType || '—';
     const sid       = s._resolvedStudentId || s.studentId || '—';
@@ -435,6 +437,7 @@ export default function MonthlyPaymentsPage({ toast, regs = [] }) {
   const allSubjects = [...new Set(
     payments.flatMap(p =>
       (p.selectedTeachers || [])
+        .filter(isVisibleTeacher)
         .map(t => t?.subject || t?.name || (typeof t === 'string' ? t : null))
         .filter(Boolean)
     )
@@ -447,6 +450,7 @@ export default function MonthlyPaymentsPage({ toast, regs = [] }) {
     if (typeFilters.size > 0 && ![...typeFilters].some(t => typeActive(p.paymentType, t))) return false;
     if (subjectFilter !== 'all') {
       const subjects = (p.selectedTeachers || [])
+        .filter(isVisibleTeacher)
         .map(t => t?.subject || t?.name || (typeof t === 'string' ? t : null))
         .filter(Boolean);
       if (!subjects.includes(subjectFilter)) return false;
@@ -714,8 +718,8 @@ export default function MonthlyPaymentsPage({ toast, regs = [] }) {
                         </div>
                       </td>
                       <td style={{ padding: '11px 14px', borderBottom: '1px solid #f8f8f8' }}>
-                        {p.selectedTeachers?.length > 0
-                          ? p.selectedTeachers.map((t, idx) => {
+                        {p.selectedTeachers?.filter(isVisibleTeacher).length > 0
+                          ? p.selectedTeachers.filter(isVisibleTeacher).map((t, idx) => {
                             const key = t?.id || idx;
                             const label = t?.subject || t?.name || (typeof t === 'string' ? t : '?');
                             return (

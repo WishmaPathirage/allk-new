@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
-import ET from '../../assets/ET.webp';
-import SFT from '../../assets/SFT.webp';
-import ICT from '../../assets/ICT.webp';
-import ACCOUNTING from '../../assets/ACCOUNTING.webp';
-import BS from '../../assets/BS.webp';
+//import ET from '../../assets/ET.webp';
+//import SFT from '../../assets/SFT.webp';
+//import ICT from '../../assets/ICT.webp';
+//import ACCOUNTING from '../../assets/ACCOUNTING.webp';
+//import BS from '../../assets/BS.webp';
 import ECON from '../../assets/ECON.webp';
 import MEDIA from '../../assets/MEDIA.webp';
 import POLITICAL from '../../assets/POLITICAL.webp';
@@ -14,12 +14,12 @@ import SINHALA from '../../assets/SINHALA.webp'
 
 
 const teachers = [
-  { name: "Mr. Sandeepa Kathriarachchi", subject: "ET",               image: ET,         route: "/teacher/et"         },
-  { name: "Mr. Shanaka Ranathunga",      subject: "SFT",              image: SFT,        route: "/teacher/sft"        },
-  { name: "Mr. Ranishan Dissanayake",    subject: "ICT",              image: ICT,        route: "/teacher/ict"        },
-  { name: "Mr. Kasun Weligama",          subject: "Business Studies", image: BS,         route: "/teacher/bs"         },
+  // { name: "Mr. Sandeepa Kathriarachchi", subject: "ET",               image: ET,         route: "/teacher/et"         },
+  // { name: "Mr. Shanaka Ranathunga",      subject: "SFT",              image: SFT,        route: "/teacher/sft"        },
+  // { name: "Mr. Ranishan Dissanayake",    subject: "ICT",              image: ICT,        route: "/teacher/ict"        },
+  // { name: "Mr. Kasun Weligama",          subject: "Business Studies", image: BS,         route: "/teacher/bs"         },
   { name: "Mr. Harsha Amarakon",         subject: "Econ",             image: ECON,       route: "/teacher/econ"       },
-  { name: "Mr. Prabhath Ariyasinghe",    subject: "Accounting",       image: ACCOUNTING, route: "/teacher/accounting" },
+  // { name: "Mr. Prabhath Ariyasinghe",    subject: "Accounting",       image: ACCOUNTING, route: "/teacher/accounting" },
   { name: "Mr. Praveen Kumarage",        subject: "Media",            image: MEDIA,      route: "/teacher/media"      },
   { name: "Mr. Amila Nishan Pitiduwa",   subject: "Political Science",image: POLITICAL,  route: "/teacher/political"  },
   { name: "Mr. Sameera Ekanayake",       subject: "Geography",        image: GEOGRAPHY,  route: "/teacher/geo"        },

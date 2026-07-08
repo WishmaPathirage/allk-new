@@ -11,11 +11,11 @@ const MONTHS = [
 ];
 
 const ALL_TEACHERS = [
-  { id: 'et',         name: 'Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology' },
-  { id: 'sft',        name: 'Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology' },
-  { id: 'ict',        name: 'Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology' },
-  { id: 'bs',         name: 'Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce'   },
-  { id: 'accounting', name: 'Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce'   },
+  // { id: 'et',         name: 'Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology' },
+  // { id: 'sft',        name: 'Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology' },
+  // { id: 'ict',        name: 'Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology' },
+  // { id: 'bs',         name: 'Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce'   },
+  // { id: 'accounting', name: 'Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce'   },
   { id: 'econ',       name: 'Harsha Amarakon',         subject: 'Economics',              stream: 'Commerce'   },
   { id: 'geo',        name: 'Sameera Ekanayake',       subject: 'Geography',              stream: 'Arts'       },
   { id: 'political',  name: 'Amila Nishan Pitiduwa',   subject: 'Political Science',      stream: 'Arts'       },
@@ -537,7 +537,7 @@ export default function RegistrationModal({ classInfo, onClose }) {
                 <p className="rm-sec-lbl">Select Teacher(s) <span style={{color:'#ff3c2e'}}>*</span></p>
 
                 <div className="rm-chips">
-                  {STREAMS.map(s => (
+                  {STREAMS.filter(s => s === 'All Streams' || ALL_TEACHERS.some(t => t.stream === s)).map(s => (
                     <button
                       key={s} type="button"
                       className={`rm-chip${streamFilter === s ? ' on' : ''}`}

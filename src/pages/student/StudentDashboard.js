@@ -9,22 +9,22 @@ import StudentRecord from './StudentRecord';
 import StudentMaterials from './StudentMaterials';
 import MonthlyPayment from '../MonthlyPayment/MonthlyPayment';
 
-import ImgET          from '../../assets/ET.webp';
-import ImgSFT         from '../../assets/SFT.webp';
-import ImgICT         from '../../assets/ICT.webp';
-import ImgBS          from '../../assets/BS.webp';
-import ImgAccounting  from '../../assets/ACCOUNTING.webp';
+// import ImgET          from '../../assets/ET.webp';
+// import ImgSFT         from '../../assets/SFT.webp';
+// import ImgICT         from '../../assets/ICT.webp';
+// import ImgBS          from '../../assets/BS.webp';
+// import ImgAccounting  from '../../assets/ACCOUNTING.webp';
 import ImgEcon        from '../../assets/ECON.webp';
 import ImgGeo         from '../../assets/GEOGRAPHY.webp';
 import ImgPolitical   from '../../assets/POLITICAL.webp';
 import ImgMedia       from '../../assets/MEDIA.webp';
 
 const TEACHER_IMG = {
-  et:         ImgET,
-  sft:        ImgSFT,
-  ict:        ImgICT,
-  bs:         ImgBS,
-  accounting: ImgAccounting,
+  // et:         ImgET,
+  // sft:        ImgSFT,
+  // ict:        ImgICT,
+  // bs:         ImgBS,
+  // accounting: ImgAccounting,
   econ:       ImgEcon,
   geo:        ImgGeo,
   political:  ImgPolitical,
@@ -52,11 +52,11 @@ function fmtSessionDate(ts) {
 
 
 const ALL_TEACHERS = [
-  { id: 'et',         name: 'Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology' },
-  { id: 'sft',        name: 'Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology' },
-  { id: 'ict',        name: 'Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology' },
-  { id: 'bs',         name: 'Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce'   },
-  { id: 'accounting', name: 'Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce'   },
+  // { id: 'et',         name: 'Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology' },
+  // { id: 'sft',        name: 'Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology' },
+  // { id: 'ict',        name: 'Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology' },
+  // { id: 'bs',         name: 'Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce'   },
+  // { id: 'accounting', name: 'Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce'   },
   { id: 'econ',       name: 'Harsha Amarakon',         subject: 'Economics',              stream: 'Commerce'   },
   { id: 'geo',        name: 'Sameera Ekanayake',       subject: 'Geography',              stream: 'Arts'       },
   { id: 'political',  name: 'Amila Nishan Pitiduwa',   subject: 'Political Science',      stream: 'Arts'       },

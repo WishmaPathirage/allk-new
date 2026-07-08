@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import {
   collection, onSnapshot, updateDoc, deleteDoc, doc,
-  query, orderBy, getDocs
+  query, orderBy, getDocs, //setDoc
 } from 'firebase/firestore';
 import { sendEmail } from '../../utils/brevo';
 import { db, auth } from '../../services/firebase';
@@ -15,17 +15,19 @@ import ZoomLinksPage from './ZoomLinksPage';
 import TeacherAccountsPage from './TeacherAccountsPage';
 
 const ALL_TEACHERS = [
-  { id: 'et',         name: 'Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology' },
-  { id: 'sft',        name: 'Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology' },
-  { id: 'ict',        name: 'Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology' },
-  { id: 'bs',         name: 'Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce'   },
-  { id: 'accounting', name: 'Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce'   },
+  // { id: 'et',         name: 'Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology' },
+  // { id: 'sft',        name: 'Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology' },
+  // { id: 'ict',        name: 'Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology' },
+  // { id: 'bs',         name: 'Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce'   },
+  // { id: 'accounting', name: 'Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce'   },
   { id: 'econ',       name: 'Harsha Amarakon',         subject: 'Economics',              stream: 'Commerce'   },
   { id: 'geo',        name: 'Sameera Ekanayake',       subject: 'Geography',              stream: 'Arts'       },
   { id: 'sinhala',   name: 'Pathum Sandanuwan with Rashmika Soorya Bandara', subject: 'Sinhala', stream: 'Arts' },
   { id: 'political',  name: 'Amila Nishan Pitiduwa',   subject: 'Political Science',      stream: 'Arts'       },
   { id: 'media',      name: 'Praveen Kumarage',        subject: 'Media',                  stream: 'Arts'       },
 ];
+const HIDDEN_TEACHER_IDS = new Set(['et', 'sft', 'ict', 'bs', 'accounting']);
+const isVisibleTeacher = (teacher) => !HIDDEN_TEACHER_IDS.has(teacher?.id ?? teacher);
 
 /* ─────────────────── helpers ─────────────────── */
 const fmtDate = (ts) => {
@@ -608,11 +610,11 @@ function DetailModal({ reg, idx, onClose, onApprove, onReject }) {
             </div>
           )}
 
-          {reg.selectedTeachers?.length > 0 && (
+          {reg.selectedTeachers?.filter(isVisibleTeacher).length > 0 && (
             <div className="ad-detail-item" style={{ marginBottom: 14 }}>
               <div className="ad-detail-lbl">Registered Teacher(s)</div>
               <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {reg.selectedTeachers.map(t => (
+                {reg.selectedTeachers.filter(isVisibleTeacher).map(t => (
                   <span key={t.id} className={`ad-tpill ${t.stream}`} style={{ fontSize: 12.5, padding: '4px 12px' }}>
                     {t.name} · {t.subject}
                   </span>
@@ -657,7 +659,7 @@ function DetailModal({ reg, idx, onClose, onApprove, onReject }) {
 
 /* ─────────────────── Registration row ─────────────────── */
 function RegRow({ reg, idx, onView, onApprove, onReject, onDelete }) {
-  const teachers = reg.selectedTeachers || [];
+  const teachers = (reg.selectedTeachers || []).filter(isVisibleTeacher);
   return (
     <tr>
       <td><span className="ad-id">{dispId(idx)}</span></td>
@@ -824,12 +826,12 @@ function StudentsTab({ regs, toast, setTab, setStatusFilter, setSubjectFilter, s
   }
   if (studentStream !== 'all') {
     studentList = studentList.filter(s =>
-      s.allRegs.some(r => r.selectedTeachers?.some(t => t.stream === studentStream))
+      s.allRegs.some(r => r.selectedTeachers?.filter(isVisibleTeacher).some(t => t.stream === studentStream))
     );
   }
   if (studentSubject !== 'all') {
     studentList = studentList.filter(s =>
-      s.allRegs.some(r => r.selectedTeachers?.some(t => t.subject === studentSubject))
+      s.allRegs.some(r => r.selectedTeachers?.filter(isVisibleTeacher).some(t => t.subject === studentSubject))
     );
   }
 
@@ -837,7 +839,7 @@ function StudentsTab({ regs, toast, setTab, setStatusFilter, setSubjectFilter, s
   const grouped = { Technology: [], Commerce: [], Arts: [], Other: [] };
   studentList.forEach(s => {
     const studentStreams = [...new Set(
-      s.allRegs.flatMap(r => r.selectedTeachers?.map(t => t.stream) || []).filter(Boolean)
+      s.allRegs.flatMap(r => r.selectedTeachers?.filter(isVisibleTeacher).map(t => t.stream) || []).filter(Boolean)
     )];
     if (studentStreams.length === 0) { grouped['Other'].push(s); return; }
     const placed = new Set();
@@ -897,11 +899,14 @@ function StudentsTab({ regs, toast, setTab, setStatusFilter, setSubjectFilter, s
               <p style={{ fontSize: 12.5, color: '#aaa', marginBottom: 16 }}>
                 Select which subjects this student is registered for. Changes apply to all their registrations.
               </p>
-              {['Technology', 'Commerce', 'Arts'].map(stream => (
+              {['Technology', 'Commerce', 'Arts'].map(stream => {
+                const teachers = ALL_TEACHERS.filter(t => t.stream === stream);
+                if (!teachers.length) return null;
+                return (
                 <div key={stream} style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#bbb', marginBottom: 8 }}>{stream}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {ALL_TEACHERS.filter(t => t.stream === stream).map(t => {
+                    {teachers.map(t => {
                       const selected = editStudent.selectedTeachers.some(x => x.id === t.id);
                       return (
                         <button
@@ -922,7 +927,7 @@ function StudentsTab({ regs, toast, setTab, setStatusFilter, setSubjectFilter, s
                     })}
                   </div>
                 </div>
-              ))}
+              );})}
             </div>
             <div className="ad-modal-footer">
               <button
@@ -990,7 +995,7 @@ function StudentsTab({ regs, toast, setTab, setStatusFilter, setSubjectFilter, s
               {students.map((s, i) => {
                 const initials = s.studentName?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
                 const allSubjectsForStudent = [...new Set(
-                  s.allRegs.flatMap(r => r.selectedTeachers || []).map(t => JSON.stringify({ id: t.id, name: t.name, subject: t.subject, stream: t.stream }))
+                  s.allRegs.flatMap(r => r.selectedTeachers || []).filter(isVisibleTeacher).map(t => JSON.stringify({ id: t.id, name: t.name, subject: t.subject, stream: t.stream }))
                 )].map(x => JSON.parse(x));
                 const avatarColors = ['#ff3c2e','#2680c7','#27956b','#c9720c','#7c3aed','#db2777'];
 
@@ -1120,7 +1125,7 @@ export default function AdminDashboard() {
       });
 
       if (reg.email) {
-        const subjectName = (reg.selectedTeachers || []).map(t => {
+        const subjectName = (reg.selectedTeachers || []).filter(isVisibleTeacher).map(t => {
           if (typeof t === 'string') return ALL_TEACHERS.find(at => at.id === t)?.subject || t;
           return t.subject || t.name || t.id || t;
         }).join(', ') || '—';
@@ -1260,7 +1265,7 @@ export default function AdminDashboard() {
         // Remove from registered_emails so the student can re-register
         try { await deleteDoc(doc(db, 'registered_emails', emailKey)); } catch (_) {}
         // Send rejection email notification
-        const rejSubjectName = (reg.selectedTeachers || []).map(t => {
+        const rejSubjectName = (reg.selectedTeachers || []).filter(isVisibleTeacher).map(t => {
           if (typeof t === 'string') return ALL_TEACHERS.find(at => at.id === t)?.subject || t;
           return t.subject || t.name || t.id || t;
         }).join(', ') || '—';
@@ -1403,7 +1408,7 @@ export default function AdminDashboard() {
   const pending  = regs.filter(r => r.status === 'pending');
   const uniqueStudents = [...new Map(regs.map(r => [r.email, r])).values()];
   const uniqueTeachers = [...new Map(
-    regs.flatMap(r => r.selectedTeachers || []).map(t => [t.id, t])
+    regs.flatMap(r => r.selectedTeachers || []).filter(isVisibleTeacher).map(t => [t.id, t])
   ).values()];
 
   /* filters for registrations tab */
@@ -1576,7 +1581,7 @@ export default function AdminDashboard() {
 
     const byStream = {};
     rows.forEach(r => {
-      const streams = [...new Set((r.selectedTeachers || []).map(t => t.stream).filter(Boolean))];
+      const streams = [...new Set((r.selectedTeachers || []).filter(isVisibleTeacher).map(t => t.stream).filter(Boolean))];
       const key = streams.length ? streams.join(' / ') : 'Unspecified';
       if (!byStream[key]) byStream[key] = [];
       byStream[key].push(r);
@@ -1601,7 +1606,7 @@ export default function AdminDashboard() {
                 <td>${r.email || '—'}</td>
                 <td>${r.phone || '—'}</td>
                 <td>${r.batch || '—'}</td>
-                <td>${(r.selectedTeachers || []).map(t => t.subject || t).join(', ') || '—'}</td>
+                <td>${(r.selectedTeachers || []).filter(isVisibleTeacher).map(t => t.subject || t).join(', ') || '—'}</td>
                 <td><span class="badge ${r.status}">${r.status}</span></td>
                 <td>${fmtTs(r.registeredAt)}</td>
               </tr>
@@ -1971,6 +1976,7 @@ export default function AdminDashboard() {
 
                       {STREAMS.map(stream => {
                         const streamTeachers = ALL_TEACHERS.filter(t => t.stream === stream);
+                        if (!streamTeachers.length) return null;
                         const meta = streamMeta[stream];
                         return (
                           <div key={stream} style={{ marginBottom: 28 }}>
