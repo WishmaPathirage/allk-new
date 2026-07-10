@@ -592,7 +592,9 @@ export default function StudentRegister() {
                   <div className="ar-field">
                     <label className="ar-label">Select Subjects <span className="ar-label-req">*</span></label>
                     {STREAMS.map(stream => {
-                      const teachers = ALL_TEACHERS.filter(t => t.stream === stream);
+                      const teachers = ALL_TEACHERS.filter(t =>
+                        t.stream === stream || (t.id === 'econ' && stream === 'Arts')
+                      );
                       if (!teachers.length) return null;
                       return (
                         <div key={stream}>

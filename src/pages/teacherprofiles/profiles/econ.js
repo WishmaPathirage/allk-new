@@ -14,9 +14,9 @@ const DAYS   = ["All Days","Tuesday","Wednesday","Friday","Saturday"];
 const TEACHER_INFO = { id: 'econ', name: 'Krishan Kasthuriarachchi', subject: 'Economics', stream: 'Commerce' };
 
 const VIDEOS = [
-  { id: 'KY01enS0DKM', url: 'https://www.youtube.com/live/KY01enS0DKM?si=t9PP3b9DqOR36n-V', title: 'Free Economics Class 01', duration: '1:28:05' },
-  { id: '5hMaOAWfrDw', url: 'https://www.youtube.com/live/5hMaOAWfrDw?si=PI3o2bsl-_Fa-YXL', title: 'Free Economics Class 02', duration: '1:15:40' },
-  { id: 'jUpGQQO-VrQ', url: 'https://www.youtube.com/live/jUpGQQO-VrQ?si=9LGYHex4enlcplAI', title: 'Free Economics Class 03', duration: '1:42:18' },
+  // { id: 'KY01enS0DKM', url: 'https://www.youtube.com/live/KY01enS0DKM?si=t9PP3b9DqOR36n-V', title: 'Free Economics Class 01', duration: '1:28:05' },
+  // { id: '5hMaOAWfrDw', url: 'https://www.youtube.com/live/5hMaOAWfrDw?si=PI3o2bsl-_Fa-YXL', title: 'Free Economics Class 02', duration: '1:15:40' },
+  // { id: 'jUpGQQO-VrQ', url: 'https://www.youtube.com/live/jUpGQQO-VrQ?si=9LGYHex4enlcplAI', title: 'Free Economics Class 03', duration: '1:42:18' },
 ];
 
 const css = `

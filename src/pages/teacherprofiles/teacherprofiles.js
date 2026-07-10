@@ -430,7 +430,7 @@ const lines = [
 const streamMap = {
   Technology: ['ET', 'SFT', 'ICT'],
   Commerce:   ['Business Studies', 'Econ', 'Accounting'],
-  Arts:       ['Media', 'Political Science', 'Geography', 'Sinhala'],
+  Arts:       ['Media', 'Political Science', 'Geography', 'Sinhala', 'Econ'],
 };
 
 
