@@ -11,7 +11,7 @@ const ALL_CLASSES = [
 
 const GRADES = ["All Grades","2026 A/L","2027 A/L","2028 A/L",];
 const DAYS   = ["All Days","Tuesday","Wednesday","Friday","Saturday"];
-const TEACHER_INFO = { id: 'econ', name: 'Harsha Amarakon', subject: 'Economics', stream: 'Commerce' };
+const TEACHER_INFO = { id: 'econ', name: 'Krishan Kasthuriarachchi', subject: 'Economics', stream: 'Commerce' };
 
 const VIDEOS = [
   { id: 'KY01enS0DKM', url: 'https://www.youtube.com/live/KY01enS0DKM?si=t9PP3b9DqOR36n-V', title: 'Free Economics Class 01', duration: '1:28:05' },
@@ -588,7 +588,7 @@ export default function TeacherProfilePage() {
             </div>
 
             <div className="tp-identity">
-              <h1 className="tp-name">Prabhath Ariyasinghe</h1>
+              <h1 className="tp-name">Krishan Kasthuriarachchi</h1>
               <div style={{ marginBottom: 16 }}>
                 <span className="tp-subject-pill">
                   <span className="tp-subject-pill-dot" />
@@ -597,7 +597,7 @@ export default function TeacherProfilePage() {
               </div>
               <span className="tp-degree">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                Bachelor of Commerce · University of Sri Jayewardenepura
+                BBA (Hons) in International Business · University of Colombo
               </span>
             </div>
           </div>
@@ -606,10 +606,12 @@ export default function TeacherProfilePage() {
           <div className="tp-about">
             <p className="tp-about-label">About</p>
             <p className="tp-about-text">
-              ශ්‍රී ජයවර්ධනපුර විශ්ව විද්‍යාලයේ උපාධිධාරියෙකි.
-කොළඹ නාලන්දා විද්‍යාලයේ හිටපු ආර්ථික විද්‍යා ගුරුවරයෙකි.
-වර්ථමානයේ Onlineaccounting .lk
-ආයතනයේ ජේශ්ඨ කථිකාචාර්යවරයකු ලෙස සේවය කරයි
+              ගම්පහ බණ්ඩාරනායක විද්‍යාලයෙන් උසස්පෙල විභාගයට මුහුණ 
+              දී ගම්පහ දිස්ත්‍රික්කයේ 12 වන ස්ථානය ලබා ගනිමින් 
+              කොළඹ විශ්ව විද්‍යාලයට ඇතුලු වී අන්තර්ජාතික ව්‍යාපාර පිළිබඳව විශේෂ 
+              උපාධි පාඨමාලවට සම්බන්ධ වීමත් සමග වෘත්තීය ගුරු ජීවිතයට ඇතුලු විය, 
+              ඒ තුලින් මා පසුපස එන්නා වූ දූ පුතුන්ගේ නෙත් පාදන්නට ඉඩ හසර 
+              ලැබීම වෘත්තීය දිවියකට එහා ගිය භාග්‍යයක් ලෙස සලකන්නෙමු.
             </p>
           </div>
 
