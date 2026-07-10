@@ -18,7 +18,7 @@ const teachers = [
   // { name: "Mr. Shanaka Ranathunga",      subject: "SFT",              image: SFT,        route: "/teacher/sft"        },
   // { name: "Mr. Ranishan Dissanayake",    subject: "ICT",              image: ICT,        route: "/teacher/ict"        },
   // { name: "Mr. Kasun Weligama",          subject: "Business Studies", image: BS,         route: "/teacher/bs"         },
-  { name: "Mr. Harsha Amarakon",         subject: "Econ",             image: ECON,       route: "/teacher/econ"       },
+  { name: "Mr. Krishan Kasthuriarachchi",         subject: "Econ",             image: ECON,       route: "/teacher/econ"       },
   // { name: "Mr. Prabhath Ariyasinghe",    subject: "Accounting",       image: ACCOUNTING, route: "/teacher/accounting" },
   { name: "Mr. Praveen Kumarage",        subject: "Media",            image: MEDIA,      route: "/teacher/media"      },
   { name: "Mr. Amila Nishan Pitiduwa",   subject: "Political Science",image: POLITICAL,  route: "/teacher/political"  },

@@ -15,7 +15,7 @@ const teachers = [
   //{ name: 'Mr. Sandeepa Kathriarachchi', subject: 'Engineering Technology', stream: 'Technology', img: Teacher1 },
   //{ name: 'Mr. Shanaka Ranathunga',      subject: 'Science for Technology', stream: 'Technology', img: Teacher2 },
   //{ name: 'Mr. Prabhath Ariyasinghe',    subject: 'Accounting',             stream: 'Commerce',   img: Teacher3 },
-  { name: 'Mr. Harsha Amarakon',         subject: 'Economics',              stream: 'Commerce',   img: Teacher4 },
+  { name: 'Mr. Krishan Kasthuriarachchi',         subject: 'Economics',              stream: 'Commerce',   img: Teacher4 },
   { name: 'Mr. Sameera Ekanayake',       subject: 'Geography',              stream: 'Arts',       img: Teacher5 },
   //{ name: 'Mr. Ranishan Dissanayake',    subject: 'ICT',                    stream: 'Technology', img: Teacher6 },
   //{ name: 'Mr. Kasun Weligama',          subject: 'Business Studies',       stream: 'Commerce',   img: Teacher7 },
