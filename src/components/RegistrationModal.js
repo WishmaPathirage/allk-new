@@ -269,7 +269,9 @@ export default function RegistrationModal({ classInfo, onClose }) {
   }, []);
 
   const visibleTeachers = ALL_TEACHERS.filter(t =>
-    streamFilter === 'All Streams' || t.stream === streamFilter
+    streamFilter === 'All Streams'
+    || t.stream === streamFilter
+    || (t.id === 'econ' && streamFilter === 'Arts')
   );
 
   const toggleTeacher = (id) => {
