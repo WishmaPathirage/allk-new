@@ -80,13 +80,28 @@ const css = `
   .sp-topbar-sub   { font-size: 12px; color: #aaa; }
 
   /* Hero */
-  .sp-hero { padding: 32px 32px 0; display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
-  .sp-hero-photo {
-    width: 150px; height: 150px; border-radius: 20px; overflow: hidden; flex-shrink: 0;
-    border: 4px solid rgba(255,255,255,.25); box-shadow: 0 8px 32px rgba(0,0,0,.3);
-    background: rgba(255,255,255,.1);
+  .sp-hero-container {
+    display: flex;
+    align-items: stretch;
+    min-height: 160px;
+    overflow: hidden;
   }
-  .sp-hero-info { flex: 1; min-width: 180px; padding-bottom: 28px; }
+  .sp-hero-img {
+    width: 160px;
+    object-fit: cover;
+    object-position: center top;
+    flex-shrink: 0;
+  }
+  .sp-hero-img-placeholder {
+    width: 160px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .sp-hero { padding: 32px 32px 28px; display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; flex: 1; }
+  .sp-hero-info { flex: 1; min-width: 180px; }
   .sp-hero-subject { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 6px; line-height: 1.2; }
   .sp-hero-teacher { font-size: 16px; color: rgba(255,255,255,.65); margin-bottom: 18px; }
   .sp-hero-badges  { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -316,8 +331,10 @@ const css = `
 
   @media (max-width: 768px) {
     .sp-topbar { padding: 12px 14px; }
-    .sp-hero { padding: 20px 14px 0; gap: 16px; }
-    .sp-hero-photo { width: 90px; height: 90px; border-radius: 14px; }
+    .sp-hero-container { min-height: 120px; }
+    .sp-hero-img { width: 120px; }
+    .sp-hero-img-placeholder { width: 120px; }
+    .sp-hero { padding: 20px 20px 20px; gap: 16px; }
     .sp-hero-subject { font-size: 20px; }
     .sp-hero-teacher { font-size: 13px; margin-bottom: 12px; }
     .sp-tab-bar { padding: 0 14px; }
@@ -818,16 +835,15 @@ export default function SubjectPage() {
         </div>
 
         {/* Hero banner */}
-        <div style={{ background: streamGrad(teacher.stream) }}>
-          <div className="sp-hero">
-            <div className="sp-hero-photo">
-              {TEACHER_IMG[teacherId]
-                ? <img src={TEACHER_IMG[teacherId]} alt={teacher.name} style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top' }} />
-                : <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </div>
-              }
+        <div className="sp-hero-container" style={{ background: streamGrad(teacher.stream) }}>
+          {TEACHER_IMG[teacherId] ? (
+            <img className="sp-hero-img" src={TEACHER_IMG[teacherId]} alt={teacher.name} />
+          ) : (
+            <div className="sp-hero-img-placeholder">
+              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
+          )}
+          <div className="sp-hero">
             <div className="sp-hero-info">
               <div className="sp-hero-subject">{teacher.subject}</div>
               <div className="sp-hero-teacher">{teacher.name}</div>
