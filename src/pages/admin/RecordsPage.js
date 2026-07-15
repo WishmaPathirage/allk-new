@@ -57,22 +57,47 @@ export default function RecordsPage({ toast }) {
   const [editSaving, setEditSaving]                             = useState(false);
   const editFolderThumbRef = useRef();
 
+  // Edit video state
+  const [editingRecordId, setEditingRecordId]   = useState(null);
+  const [editRecTitle, setEditRecTitle]         = useState('');
+  const [editRecYtUrl, setEditRecYtUrl]         = useState('');
+  const [editRecFolderId, setEditRecFolderId]   = useState('');
+  const [editRecSaving, setEditRecSaving]       = useState(false);
+
   const teacher = ALL_TEACHERS.find(t => t.id === teacherId);
 
   useEffect(() => {
-    const q = query(collection(db, 'records'), orderBy('uploadedAt', 'desc'));
-    const unsub = onSnapshot(q, snap => {
-      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    }, () => {});
-    return unsub;
+    let active = true;
+    let unsub = null;
+    const tId = setTimeout(() => {
+      if (!active) return;
+      const q = query(collection(db, 'records'), orderBy('uploadedAt', 'desc'));
+      unsub = onSnapshot(q, snap => {
+        setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      }, () => {});
+    }, 50);
+    return () => {
+      active = false;
+      clearTimeout(tId);
+      if (unsub) unsub();
+    };
   }, []);
 
   useEffect(() => {
-    const q = query(collection(db, 'record_folders'), orderBy('createdAt', 'desc'));
-    const unsub = onSnapshot(q, snap => {
-      setFolders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    }, () => {});
-    return unsub;
+    let active = true;
+    let unsub = null;
+    const tId = setTimeout(() => {
+      if (!active) return;
+      const q = query(collection(db, 'record_folders'), orderBy('createdAt', 'desc'));
+      unsub = onSnapshot(q, snap => {
+        setFolders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      }, () => {});
+    }, 50);
+    return () => {
+      active = false;
+      clearTimeout(tId);
+      if (unsub) unsub();
+    };
   }, []);
 
   const filtered       = items.filter(i => i.teacherId === teacherId);
@@ -246,6 +271,44 @@ export default function RecordsPage({ toast }) {
       if (expandedId === item.id) setExpandedId(null);
       toast('Record deleted', 'info');
     } catch { toast('Delete failed', 'error'); }
+  };
+
+  const handleStartEditRecord = (item) => {
+    setEditingRecordId(item.id);
+    setEditRecTitle(item.title);
+    setEditRecYtUrl(item.youtubeUrl || `https://www.youtube.com/watch?v=${item.videoId}`);
+    setEditRecFolderId(item.folderId || '');
+  };
+
+  const handleCancelEditRecord = () => {
+    setEditingRecordId(null);
+    setEditRecTitle('');
+    setEditRecYtUrl('');
+    setEditRecFolderId('');
+  };
+
+  const handleSaveEditRecord = async (item) => {
+    if (!editRecTitle.trim()) { toast('Please enter a title', 'error'); return; }
+    if (!editRecYtUrl.trim()) { toast('Please enter a YouTube URL', 'error'); return; }
+    const vid = extractVideoId(editRecYtUrl);
+    if (!vid) { toast('Could not extract video ID — please check the URL', 'error'); return; }
+    setEditRecSaving(true);
+    try {
+      const folderObj = teacherFolders.find(f => f.id === editRecFolderId);
+      await updateDoc(doc(db, 'records', item.id), {
+        title: editRecTitle.trim(),
+        youtubeUrl: editRecYtUrl.trim(),
+        videoId: vid,
+        folderId: editRecFolderId || null,
+        folderName: folderObj?.name || null,
+      });
+      toast('Video details updated', 'success');
+      handleCancelEditRecord();
+    } catch (err) {
+      console.error(err);
+      toast('Failed to update video. Please try again.', 'error');
+    }
+    setEditRecSaving(false);
   };
 
   const streamColor   = teacher?.stream === 'Technology' ? '#2680c7' : teacher?.stream === 'Commerce' ? '#27956b' : '#c9720c';
@@ -579,48 +642,105 @@ export default function RecordsPage({ toast }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {displayedRecs.map(item => (
                 <div key={item.id} style={{ background: '#fff', borderRadius: 14, boxShadow: '0 1px 5px rgba(0,0,0,.06)', overflow: 'hidden' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px' }}>
-                    <div style={{ width: 38, height: 38, borderRadius: 10, background: '#fff0f0', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff3c2e"><path d="M19.59 6.69a4.83 4.83 0 0 0-3.4-3.4C14.78 3 12 3 12 3s-2.78 0-4.19.29a4.83 4.83 0 0 0-3.4 3.4C4.12 8.09 4 10 4 12s.12 3.91.41 5.31a4.83 4.83 0 0 0 3.4 3.4C9.22 21 12 21 12 21s2.78 0 4.19-.29a4.83 4.83 0 0 0 3.4-3.4C19.88 15.91 20 14 20 12s-.12-3.91-.41-5.31zM10 15.5v-7l6 3.5-6 3.5z"/></svg>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13.5, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3 }}>
-                        <div style={{ fontSize: 11.5, color: '#aaa' }}>{fmtDate(item.uploadedAt)}</div>
-                        {item.folderName && (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: '#d97706', background: '#fffbeb', borderRadius: 99, padding: '1px 7px' }}>
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                            {item.folderName}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-                      <button
-                        onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
-                        style={{ fontSize: 12, fontWeight: 700, color: '#2680c7', background: '#e8f0fd', border: 'none', borderRadius: 7, padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        {expandedId === item.id ? 'Hide' : 'Play'}
-                      </button>
-                      <button onClick={() => handleDelete(item)}
-                        style={{ width: 30, height: 30, borderRadius: 7, background: '#fff0f0', color: '#cc2a1e', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                      </button>
-                    </div>
-                  </div>
-
-                  {expandedId === item.id && item.videoId && (
-                    <div style={{ padding: '0 18px 18px' }}>
-                      <div style={{ borderRadius: 10, overflow: 'hidden', aspectRatio: '16/9', background: '#000' }}>
-                        <iframe
-                          src={`https://www.youtube.com/embed/${item.videoId}?rel=0&modestbranding=1&disablekb=0`}
-                          title={item.title}
-                          width="100%" height="100%"
-                          style={{ border: 'none', display: 'block' }}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  {editingRecordId === item.id ? (
+                    <div style={{ padding: '16px 18px', background: '#fff8f8', border: '1.5px solid #ff3c2e', borderRadius: 14 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#cc2a1e', marginBottom: 12 }}>Edit Video Details</div>
+                      
+                      <div style={{ marginBottom: 10 }}>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: '#666', display: 'block', marginBottom: 4 }}>Video Title *</label>
+                        <input
+                          style={{ width: '100%', fontFamily: 'inherit', fontSize: 13, color: '#333', background: '#fff', border: '1.5px solid #eee', borderRadius: 8, padding: '8px 12px', outline: 'none', boxSizing: 'border-box' }}
+                          value={editRecTitle}
+                          onChange={e => setEditRecTitle(e.target.value)}
                         />
                       </div>
+                      
+                      <div style={{ marginBottom: 10 }}>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: '#666', display: 'block', marginBottom: 4 }}>YouTube URL *</label>
+                        <input
+                          style={{ width: '100%', fontFamily: 'inherit', fontSize: 13, color: '#333', background: '#fff', border: '1.5px solid #eee', borderRadius: 8, padding: '8px 12px', outline: 'none', boxSizing: 'border-box' }}
+                          value={editRecYtUrl}
+                          onChange={e => setEditRecYtUrl(e.target.value)}
+                        />
+                      </div>
+                      
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: '#666', display: 'block', marginBottom: 4 }}>Folder</label>
+                        <select
+                          style={{ width: '100%', fontFamily: 'inherit', fontSize: 13, color: '#333', background: '#fff', border: '1.5px solid #eee', borderRadius: 8, padding: '8px 12px', outline: 'none', boxSizing: 'border-box', cursor: 'pointer' }}
+                          value={editRecFolderId}
+                          onChange={e => setEditRecFolderId(e.target.value)}>
+                          <option value="">No folder (uncategorized)</option>
+                          {teacherFolders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                        </select>
+                      </div>
+                      
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => handleSaveEditRecord(item)}
+                          disabled={editRecSaving}
+                          style={{ flex: 1, fontFamily: 'inherit', fontSize: 12, fontWeight: 700, color: '#fff', background: editRecSaving ? '#ccc' : '#ff3c2e', border: 'none', borderRadius: 8, padding: '8px 14px', cursor: editRecSaving ? 'not-allowed' : 'pointer' }}>
+                          {editRecSaving ? 'Saving…' : 'Save'}
+                        </button>
+                        <button
+                          onClick={handleCancelEditRecord}
+                          style={{ fontFamily: 'inherit', fontSize: 12, fontWeight: 600, color: '#888', background: '#f4f4f4', border: 'none', borderRadius: 8, padding: '8px 14px', cursor: 'pointer' }}>
+                          Cancel
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px' }}>
+                        <div style={{ width: 38, height: 38, borderRadius: 10, background: '#fff0f0', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff3c2e"><path d="M19.59 6.69a4.83 4.83 0 0 0-3.4-3.4C14.78 3 12 3 12 3s-2.78 0-4.19.29a4.83 4.83 0 0 0-3.4 3.4C4.12 8.09 4 10 4 12s.12 3.91.41 5.31a4.83 4.83 0 0 0 3.4 3.4C9.22 21 12 21 12 21s2.78 0 4.19-.29a4.83 4.83 0 0 0 3.4-3.4C19.88 15.91 20 14 20 12s-.12-3.91-.41-5.31zM10 15.5v-7l6 3.5-6 3.5z"/></svg>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3 }}>
+                            <div style={{ fontSize: 11.5, color: '#aaa' }}>{fmtDate(item.uploadedAt)}</div>
+                            {item.folderName && (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: '#d97706', background: '#fffbeb', borderRadius: 99, padding: '1px 7px' }}>
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                {item.folderName}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+                          <button
+                            onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+                            style={{ fontSize: 12, fontWeight: 700, color: '#2680c7', background: '#e8f0fd', border: 'none', borderRadius: 7, padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            {expandedId === item.id ? 'Hide' : 'Play'}
+                          </button>
+                          <button
+                            onClick={() => handleStartEditRecord(item)}
+                            title="Edit video"
+                            style={{ width: 30, height: 30, borderRadius: 7, background: '#e8f0fd', color: '#2680c7', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                          </button>
+                          <button onClick={() => handleDelete(item)}
+                            style={{ width: 30, height: 30, borderRadius: 7, background: '#fff0f0', color: '#cc2a1e', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      {expandedId === item.id && item.videoId && (
+                        <div style={{ padding: '0 18px 18px' }}>
+                          <div style={{ borderRadius: 10, overflow: 'hidden', aspectRatio: '16/9', background: '#000' }}>
+                            <iframe
+                              src={`https://www.youtube.com/embed/${item.videoId}?rel=0&modestbranding=1&disablekb=0`}
+                              title={item.title}
+                              width="100%" height="100%"
+                              style={{ border: 'none', display: 'block' }}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               ))}
