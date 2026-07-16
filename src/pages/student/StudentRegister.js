@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../services/firebase';
 import { Link } from 'react-router-dom';
@@ -380,6 +380,14 @@ export default function StudentRegister() {
       const year       = new Date().getFullYear();
       const monthKey   = `${year}-${String(monthIdx).padStart(2, '0')}`;
 
+      /* map short teacher ids -> their Firebase Auth UID (= teachers/{uid} doc id)
+         so Firestore rules can grant read access via array-contains(request.auth.uid)
+         without a get() lookup, which Firestore disallows for list queries */
+      const teachersSnap = await getDocs(collection(db, 'teachers'));
+      const uidByShortId = {};
+      teachersSnap.docs.forEach(d => { uidByShortId[d.data().id] = d.id; });
+      const teacherUids = selectedTeachers.map(id => uidByShortId[id]).filter(Boolean);
+
       /* persist registration */
       await addDoc(collection(db, 'registrations'), {
         studentName: name,
@@ -389,9 +397,12 @@ export default function StudentRegister() {
         registrationMonth: month,
         registrationMonthKey: monthKey,
         selectedTeachers,
+        teacherIds: selectedTeachers,
+        teacherUids,
         slipURL,
-        status:      'pending',
-        submittedAt: serverTimestamp(),
+        status:       'pending',
+        submittedAt:  serverTimestamp(),
+        registeredAt: serverTimestamp(),
       });
 
       /* auto-create linked monthly payment record */

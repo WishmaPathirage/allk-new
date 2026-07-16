@@ -26,14 +26,14 @@ const faqs = [
   {
     stream: "Materials",
     q: "What learning materials will I receive?",
-    a: "Teachers upload lesson notes, past papers, model answers, and revision guides — all organised by topic. Download them anytime and study fully offline from any device.",
+    a: "Teachers upload lesson notes, past papers, model answers, and revision guides, all organised by topic. Download them anytime and study fully offline from any device.",
     si: "ගුරුවරු notes, past papers සහ model answers ඩෑෂ්බෝඩ් හරහා upload කරයි. ඕනෑ වේලාවක download කර offline ද ඉගෙන ගත හැකිය.",
   },
   {
     stream: "Payment",
     q: "How does monthly payment work?",
-    a: "Pay a monthly fee per teacher per subject. Payment is processed securely online and access activates instantly. No long-term contracts — cancel or switch teachers freely each month.",
-    si: "එක් ගුරුවරයෙකුට මාසිකව ගෙවන්න. දිගු ගිවිසුම් නොමැත — ඕනෑ වේලාවක cancel කළ හැකිය.",
+    a: "Pay a monthly fee per teacher per subject. Payment is processed securely online and access activates instantly. No long-term contracts, cancel or switch teachers freely each month.",
+    si: "එක් ගුරුවරයෙකුට මාසිකව ගෙවන්න. දිගු ගිවිසුම් නොමැත, ඕනෑ වේලාවක cancel කළ හැකිය.",
   },
 ];
 

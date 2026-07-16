@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, orderBy, where } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 
 const fmtDate = (ts) => {
@@ -16,18 +16,17 @@ export default function TeacherStudentsPage({ teacher, toast }) {
   const [viewStudent, setViewStudent] = useState(null);
 
   useEffect(() => {
-    const q = query(collection(db, 'registrations'), orderBy('registeredAt', 'desc'));
+    const q = query(
+      collection(db, 'registrations'),
+      where('teacherUids', 'array-contains', teacher.docId),
+      orderBy('registeredAt', 'desc')
+    );
     const unsub = onSnapshot(q, snap => {
-      const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      setStudents(all.filter(r =>
-        Array.isArray(r.selectedTeachers)
-          ? r.selectedTeachers.some(t => (t?.id ?? t) === teacher.id)
-          : false
-      ));
+      setStudents(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoading(false);
     }, () => setLoading(false));
     return unsub;
-  }, [teacher.id]);
+  }, [teacher.id, teacher.docId]);
 
   const batches = [...new Set(students.map(s => s.batch).filter(Boolean))].sort();
 

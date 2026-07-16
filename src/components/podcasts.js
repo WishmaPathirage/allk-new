@@ -303,7 +303,7 @@ export default function PodcastSection() {
             <span className="ps-eyebrow-text">Watch &amp; Listen</span>
           </div>
           <h2 className="ps-title">Our <em>Podcasts</em></h2>
-          <p className="ps-subtitle">In-depth conversations, exam strategies and expert insights — all in one place.</p>
+          <p className="ps-subtitle">In-depth conversations, exam strategies and expert insights, all in one place.</p>
         </div>
 
         <div className="ps-grid">

@@ -395,7 +395,7 @@ export default function Contact() {
           <h1 className="ct-title">Connect <em>With Us</em></h1>
           <p className="ct-subtitle">
             Have a question, complaint, or just want to say hello?
-            We'd love to hear from you — drop us a message below.
+            We'd love to hear from you. Drop us a message below.
           </p>
         </div>
 

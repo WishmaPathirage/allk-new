@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../services/firebase';
 
@@ -340,6 +340,14 @@ export default function RegistrationModal({ classInfo, onClose }) {
       // 2. Build selected teacher objects
       const teachers = ALL_TEACHERS.filter(t => selectedTeachers.includes(t.id));
 
+      // 2b. Map short teacher ids -> their Firebase Auth UID (= teachers/{uid} doc id)
+      //     so Firestore rules can grant read access via array-contains(request.auth.uid)
+      //     without a get() lookup, which Firestore disallows for list queries
+      const teachersSnap = await getDocs(collection(db, 'teachers'));
+      const uidByShortId = {};
+      teachersSnap.docs.forEach(d => { uidByShortId[d.data().id] = d.id; });
+      const teacherUids = teachers.map(t => uidByShortId[t.id]).filter(Boolean);
+
       // 3. Build month key YYYY-MM
       const monthIdx = MONTHS.indexOf(form.month) + 1;
       const year     = new Date().getFullYear();
@@ -363,6 +371,8 @@ export default function RegistrationModal({ classInfo, onClose }) {
           location: classInfo.location,
         } : null,
         selectedTeachers: teachers,
+        teacherIds: teachers.map(t => t.id),
+        teacherUids,
         paymentSlipUrl,
         paymentSlipFileName: file.name,
         submittedAt:   serverTimestamp(),
@@ -438,7 +448,7 @@ export default function RegistrationModal({ classInfo, onClose }) {
                 <div className="rm-banner">
                   <div className="rm-banner-dot" />
                   <div>
-                    <div className="rm-banner-title">{classInfo.title} — {classInfo.grade}</div>
+                    <div className="rm-banner-title">{classInfo.title} - {classInfo.grade}</div>
                     <div className="rm-banner-meta">
                       {classInfo.teacher && <span style={{fontWeight:600,color:'#ff3c2e'}}>{classInfo.teacher.name}</span>}
                     </div>

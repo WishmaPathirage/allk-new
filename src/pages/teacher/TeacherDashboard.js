@@ -442,13 +442,9 @@ export default function TeacherDashboard() {
     const subs = [];
 
     subs.push(onSnapshot(
-      query(collection(db, 'registrations'), orderBy('registeredAt', 'desc')),
+      query(collection(db, 'registrations'), where('teacherUids', 'array-contains', teacher.docId)),
       snap => {
-        const docs = snap.docs.map(d => d.data()).filter(r =>
-          Array.isArray(r.selectedTeachers)
-            ? r.selectedTeachers.some(t => (t?.id ?? t) === teacher.id)
-            : false
-        );
+        const docs = snap.docs.map(d => d.data());
         setStatsData(s => ({
           ...s,
           students: docs.length,

@@ -502,6 +502,17 @@ export default function StudentLogin() {
 
       const cred = await signInWithEmailAndPassword(auth, emailToUse, pw);
 
+      // Teacher accounts belong on the teacher dashboard — redirect them there
+      // instead of into the student portal.
+      const teacherSnap = await getDocs(
+        query(collection(db, 'teachers'), where('email', '==', cred.user.email.toLowerCase()))
+      );
+      if (!teacherSnap.empty) {
+        setLoading(false);
+        navigate('/teacher');
+        return;
+      }
+
       const snap2 = await getDocs(
         query(collection(db, 'registrations'), where('email', '==', cred.user.email))
       );

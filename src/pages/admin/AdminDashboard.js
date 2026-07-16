@@ -1387,6 +1387,40 @@ export default function AdminDashboard() {
     }
   };
 
+  /* one-time fix: backfill registeredAt + teacherIds + teacherUids on old registrations
+     (orderBy('registeredAt') and the teacher security rule both need these fields) */
+  const backfillRegisteredAt = async () => {
+    try {
+      const [regsSnap, teachersSnap] = await Promise.all([
+        getDocs(collection(db, 'registrations')),
+        getDocs(collection(db, 'teachers')),
+      ]);
+      const uidByShortId = {};
+      teachersSnap.docs.forEach(d => { uidByShortId[d.data().id] = d.id; });
+
+      const fixes = regsSnap.docs.map(d => {
+        const data = d.data();
+        const patch = {};
+        if (!data.registeredAt) patch.registeredAt = data.submittedAt || new Date();
+        const shortIds = (data.selectedTeachers || [])
+          .map(t => (typeof t === 'string' ? t : t?.id))
+          .filter(Boolean);
+        if (!Array.isArray(data.teacherIds)) patch.teacherIds = shortIds;
+        if (!Array.isArray(data.teacherUids)) {
+          patch.teacherUids = shortIds.map(id => uidByShortId[id]).filter(Boolean);
+        }
+        return Object.keys(patch).length ? { id: d.id, patch } : null;
+      }).filter(Boolean);
+
+      if (fixes.length === 0) { toast('Nothing to fix — all registrations already up to date.', 'info'); return; }
+      if (!window.confirm(`Fix ${fixes.length} registration(s) missing a date or teacher-link field?`)) return;
+      await Promise.all(fixes.map(f => updateDoc(doc(db, 'registrations', f.id), f.patch)));
+      toast(`Fixed ${fixes.length} registration(s).`, 'success');
+    } catch (err) {
+      toast('Backfill failed: ' + (err?.message || 'unknown error'), 'error');
+    }
+  };
+
   const deleteStudentRegs = async (ids, name) => {
     if (window.confirm(`Delete ${name || 'this student'} and all their registrations permanently? This cannot be undone.`)) {
       const regDocs = ids.map(id => regs.find(r => r.id === id)).filter(Boolean);
@@ -1907,6 +1941,13 @@ export default function AdminDashboard() {
                           >Clear</button>
                         )}
                         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+                          <button
+                            onClick={backfillRegisteredAt}
+                            title="One-time fix: makes old registrations missing a date field visible in teacher/admin lists"
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: '#555', background: '#f0f0f0', border: 'none', borderRadius: 8, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                            Fix Missing Dates
+                          </button>
                           <button
                             onClick={downloadRegistrationsCSV}
                             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: '#fff', background: '#2680c7', border: 'none', borderRadius: 8, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>

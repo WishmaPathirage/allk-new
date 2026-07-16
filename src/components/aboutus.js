@@ -324,7 +324,7 @@ export default function AboutUs() {
           <div className="au-text-col" ref={textRef}>
 
             <p className="au-subheading">
-              A/L.LK is Sri Lanka's most trusted Advanced Level online learning platform —
+              A/L.LK is Sri Lanka's most trusted Advanced Level online learning platform,
               built by educators, for students who refuse to settle for less.
             </p>
 
@@ -344,7 +344,7 @@ export default function AboutUs() {
               </div>
             </div>
 
-            <p className="au-desc">Everything you need to ace your A/Ls — in one place.</p>
+            <p className="au-desc">Everything you need to ace your A/Ls, in one place.</p>
 
             {/* checklist */}
             <ul className="au-checks">
