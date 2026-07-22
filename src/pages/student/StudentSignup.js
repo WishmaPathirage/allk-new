@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser, sendPasswordResetEmail } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser, sendPasswordResetEmail, onAuthStateChanged } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../services/firebase';
 import { useNavigate, Link } from 'react-router-dom';
@@ -403,6 +403,28 @@ function EyeIcon({ open }) {
 
 export default function StudentSignup() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if (user.email === 'admin@al.lk') {
+          navigate('/admin', { replace: true });
+        } else {
+          // Check if teacher
+          const teacherSnap = await getDocs(
+            query(collection(db, 'teachers'), where('email', '==', user.email.toLowerCase()))
+          );
+          if (!teacherSnap.empty) {
+            navigate('/teacher', { replace: true });
+          } else {
+            navigate('/student', { replace: true });
+          }
+        }
+      }
+    });
+    return unsub;
+  }, [navigate]);
+
   const [studentId,   setStudentId]   = useState('');
   const [email,       setEmail]       = useState('');
   const [password,    setPassword]    = useState('');
