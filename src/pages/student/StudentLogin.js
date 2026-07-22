@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../services/firebase';
 import { useNavigate, Link } from 'react-router-dom';
@@ -411,6 +411,27 @@ const css = `
 // view: 'login' | 'forgot' | 'reset-sent'
 export default function StudentLogin() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if (user.email === 'admin@al.lk') {
+          navigate('/admin', { replace: true });
+        } else {
+          // Check if teacher
+          const teacherSnap = await getDocs(
+            query(collection(db, 'teachers'), where('email', '==', user.email.toLowerCase()))
+          );
+          if (!teacherSnap.empty) {
+            navigate('/teacher', { replace: true });
+          } else {
+            navigate('/student', { replace: true });
+          }
+        }
+      }
+    });
+    return unsub;
+  }, [navigate]);
 
   // login state
   const [identifier, setIdentifier] = useState('');

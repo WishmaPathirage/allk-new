@@ -37,10 +37,10 @@ const ALL_TEACHERS = [
 const streamColor = s => s === 'Technology' ? '#2680c7' : s === 'Commerce' ? '#27956b' : '#c9720c';
 const streamBg    = s => s === 'Technology' ? '#e8f4fd' : s === 'Commerce' ? '#e8f8f0' : '#fdf0e8';
 const streamGrad  = s => s === 'Technology'
-  ? 'linear-gradient(135deg,#1a2c42 0%,#1e3a5c 100%)'
+  ? 'linear-gradient(to right, #e0f2fe 0%, #0284c7 45%, #0369a1 100%)'
   : s === 'Commerce'
-  ? 'linear-gradient(135deg,#1a2e24 0%,#1e3a2c 100%)'
-  : 'linear-gradient(135deg,#2e1f0e 0%,#3d2a12 100%)';
+  ? 'linear-gradient(to right, #ecfdf5 0%, #10b981 45%, #047857 100%)'
+  : 'linear-gradient(to right, #fff7ed 0%, #f97316 45%, #c2410c 100%)';
 
 const fmtDate = ts => {
   if (!ts) return '—';
@@ -82,31 +82,73 @@ const css = `
   /* Hero */
   .sp-hero-container {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     min-height: 160px;
+    height: 160px;
     overflow: hidden;
+    position: relative;
+  }
+  .sp-hero-img-wrap {
+    position: absolute;
+    right: 5%;
+    bottom: 0;
+    top: 0;
+    height: 100%;
+    width: 220px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 10;
   }
   .sp-hero-img {
-    width: 160px;
-    object-fit: cover;
-    object-position: center top;
-    flex-shrink: 0;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    filter: contrast(1.2) brightness(1.08);
+    display: block;
   }
   .sp-hero-img-placeholder {
-    width: 160px;
-    background: rgba(255,255,255,0.05);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    margin-bottom: auto;
+    margin-top: auto;
   }
-  .sp-hero { padding: 32px 32px 28px; display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; flex: 1; }
-  .sp-hero-info { flex: 1; min-width: 180px; }
-  .sp-hero-subject { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 6px; line-height: 1.2; }
-  .sp-hero-teacher { font-size: 16px; color: rgba(255,255,255,.65); margin-bottom: 18px; }
-  .sp-hero-badges  { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sp-hero { padding: 0 28px; display: flex; align-items: center; justify-content: center; flex: 1; }
+  .sp-hero-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    margin-right: 220px;
+    padding-left: 20px;
+  }
+  .sp-hero-subject {
+    font-size: 64px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 2px;
+    line-height: 1.0;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .sp-hero-teacher {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 6px;
+  }
+  .sp-hero-badges  { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; justify-content: center; }
   .sp-hero-badge   {
-    font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 99px;
+    font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 99px;
     background: rgba(255,255,255,.15); color: rgba(255,255,255,.9);
     border: 1px solid rgba(255,255,255,.2);
   }
@@ -331,12 +373,14 @@ const css = `
 
   @media (max-width: 768px) {
     .sp-topbar { padding: 12px 14px; }
-    .sp-hero-container { min-height: 120px; }
-    .sp-hero-img { width: 120px; }
-    .sp-hero-img-placeholder { width: 120px; }
-    .sp-hero { padding: 20px 20px 20px; gap: 16px; }
-    .sp-hero-subject { font-size: 20px; }
-    .sp-hero-teacher { font-size: 13px; margin-bottom: 12px; }
+    .sp-hero-container { min-height: 120px; height: 120px; }
+    .sp-hero-img-wrap { height: 100%; width: 110px; right: 10px; bottom: 0; top: 0; }
+    .sp-hero-img-placeholder { width: 70px; height: 70px; margin-bottom: auto; margin-top: auto; }
+    .sp-hero { padding: 0 16px; }
+    .sp-hero-info { margin-right: 110px; padding-left: 0; }
+    .sp-hero-subject { font-size: 32px; }
+    .sp-hero-teacher { font-size: 14px; margin-bottom: 2px; }
+    .sp-hero-badges { margin-top: 4px; }
     .sp-tab-bar { padding: 0 14px; }
     .sp-tab { padding: 14px 14px; font-size: 13px; }
     .sp-body { padding: 16px 14px 56px; }
@@ -836,16 +880,9 @@ export default function SubjectPage() {
 
         {/* Hero banner */}
         <div className="sp-hero-container" style={{ background: streamGrad(teacher.stream) }}>
-          {TEACHER_IMG[teacherId] ? (
-            <img className="sp-hero-img" src={TEACHER_IMG[teacherId]} alt={teacher.name} />
-          ) : (
-            <div className="sp-hero-img-placeholder">
-              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </div>
-          )}
           <div className="sp-hero">
             <div className="sp-hero-info">
-              <div className="sp-hero-subject">{teacher.subject}</div>
+              <div className="sp-hero-subject">{(teacher.subject || '').toUpperCase()}</div>
               <div className="sp-hero-teacher">{teacher.name}</div>
               <div className="sp-hero-badges">
                 <span className="sp-hero-badge" style={{ background: streamBg(teacher.stream), color: streamColor(teacher.stream), border: 'none' }}>{teacher.stream}</span>
@@ -853,6 +890,16 @@ export default function SubjectPage() {
                 <span className="sp-hero-badge">{materials.length} file{materials.length !== 1 ? 's' : ''}</span>
               </div>
             </div>
+          </div>
+
+          <div className="sp-hero-img-wrap">
+            {TEACHER_IMG[teacherId] ? (
+              <img className="sp-hero-img" src={TEACHER_IMG[teacherId]} alt={teacher.name} />
+            ) : (
+              <div className="sp-hero-img-placeholder">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            )}
           </div>
         </div>
 
