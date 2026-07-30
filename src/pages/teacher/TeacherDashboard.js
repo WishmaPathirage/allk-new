@@ -6,6 +6,7 @@ import {
 import { auth, db } from '../../services/firebase';
 import { useNavigate } from 'react-router-dom';
 import TeacherMaterialsPage from './TeacherMaterialsPage';
+import TeacherExamPapersPage from './TeacherExamPapersPage';
 import TeacherRecordsPage   from './TeacherRecordsPage';
 import TeacherZoomLinksPage from './TeacherZoomLinksPage';
 import TeacherStudentsPage  from './TeacherStudentsPage';
@@ -345,6 +346,15 @@ const NAV = [
     ),
   },
   {
+    id: 'exams', label: 'Exam Papers',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+    ),
+  },
+  {
     id: 'recordings', label: 'Class Recordings',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -377,6 +387,7 @@ const NAV = [
 const PAGE_TITLES = {
   overview:   'Overview',
   materials:  'Study Materials',
+  exams:      'Exam Papers',
   recordings: 'Class Recordings',
   zoom:       'Zoom Sessions',
   students:   'My Students',
@@ -614,6 +625,7 @@ export default function TeacherDashboard() {
           <div className="td-body">
             {activePage === 'overview'   && <OverviewPage teacher={teacher} statsData={statsData} />}
             {activePage === 'materials'  && <TeacherMaterialsPage teacher={teacher} toast={addToast} />}
+            {activePage === 'exams'      && <TeacherExamPapersPage teacher={teacher} toast={addToast} />}
             {activePage === 'recordings' && <TeacherRecordsPage   teacher={teacher} toast={addToast} />}
             {activePage === 'zoom'       && <TeacherZoomLinksPage teacher={teacher} toast={addToast} />}
             {activePage === 'students'   && <TeacherStudentsPage  teacher={teacher} toast={addToast} />}

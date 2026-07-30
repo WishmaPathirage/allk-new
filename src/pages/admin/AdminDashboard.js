@@ -10,6 +10,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { signOut } from 'firebase/auth';
 import RecordsPage from './RecordsPage';
 import MaterialsPage from './MaterialsPage';
+import ExamPapersPage from './ExamPapersPage';
 import MonthlyPaymentsPage from './MonthlyPaymentsPage';
 import ZoomLinksPage from './ZoomLinksPage';
 import TeacherAccountsPage from './TeacherAccountsPage';
@@ -583,6 +584,10 @@ function DetailModal({ reg, idx, onClose, onApprove, onReject }) {
               <div className="ad-detail-lbl">Status</div>
               <div className="ad-detail-val"><StatusBadge status={reg.status} /></div>
             </div>
+            <div className="ad-detail-item">
+              <div className="ad-detail-lbl">District</div>
+              <div className="ad-detail-val">{reg.district || '—'}</div>
+            </div>
             <div className="ad-detail-item ad-detail-full">
               <div className="ad-detail-lbl">Address</div>
               <div className="ad-detail-val">{reg.address || '—'}</div>
@@ -790,6 +795,10 @@ const NAV = [
   {
     id: 'materials', label: 'Study Materials',
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+  },
+  {
+    id: 'exam-papers', label: 'Exam Papers',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
   },
   {
     id: 'teacher-accounts', label: 'Teacher Accounts',
@@ -1628,7 +1637,7 @@ export default function AdminDashboard() {
           <thead>
             <tr>
               <th>#</th><th>Student ID</th><th>Name</th><th>Email</th>
-              <th>Phone</th><th>Batch</th><th>Subjects</th><th>Status</th><th>Registered</th>
+              <th>Phone</th><th>Address</th><th>District</th><th>Batch</th><th>Subjects</th><th>Status</th><th>Registered</th>
             </tr>
           </thead>
           <tbody>
@@ -1639,6 +1648,8 @@ export default function AdminDashboard() {
                 <td><strong>${r.studentName || '—'}</strong></td>
                 <td>${r.email || '—'}</td>
                 <td>${r.phone || '—'}</td>
+                <td>${r.address || '—'}</td>
+                <td>${r.district || '—'}</td>
                 <td>${r.batch || '—'}</td>
                 <td>${(r.selectedTeachers || []).filter(isVisibleTeacher).map(t => t.subject || t).join(', ') || '—'}</td>
                 <td><span class="badge ${r.status}">${r.status}</span></td>
@@ -2116,6 +2127,8 @@ export default function AdminDashboard() {
 
                 {/* ══ STUDY MATERIALS ══ */}
                 {tab === 'materials' && <MaterialsPage toast={toast} />}
+
+                {tab === 'exam-papers' && <ExamPapersPage toast={toast} />}
 
                 {/* ══ TEACHER ACCOUNTS ══ */}
                 {tab === 'teacher-accounts' && <TeacherAccountsPage toast={toast} />}
