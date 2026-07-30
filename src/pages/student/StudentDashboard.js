@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import StudentProfile from './StudentProfile';
 import StudentRecord from './StudentRecord';
 import StudentMaterials from './StudentMaterials';
+import StudentExamPapers from './StudentExamPapers';
 import MonthlyPayment from '../MonthlyPayment/MonthlyPayment';
 
 // import ImgET          from '../../assets/ET.webp';
@@ -749,7 +750,7 @@ export default function StudentDashboard() {
   const now     = new Date();
   const dayStr  = now.toLocaleDateString('en-US', { weekday: 'long' });
   const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-  const pageTitle = tab === 'dashboard' ? 'Dashboard' : tab === 'recordings' ? 'Recordings' : tab === 'materials' ? 'Study Materials' : tab === 'zoom' ? 'Live Classes' : tab === 'payment' ? 'Monthly Payment' : 'My Profile';
+  const pageTitle = tab === 'dashboard' ? 'Dashboard' : tab === 'recordings' ? 'Recordings' : tab === 'materials' ? 'Study Materials' : tab === 'exams' ? 'Exam Papers' : tab === 'zoom' ? 'Live Classes' : tab === 'payment' ? 'Monthly Payment' : 'My Profile';
 
   /* ── Dashboard tab ── */
   const renderDashboard = () => (
@@ -1064,6 +1065,10 @@ export default function StudentDashboard() {
             <button className={`sd-nav-btn${tab === 'materials'  ? ' on' : ''}`} onClick={() => switchTab('materials')}>
               <IcoMat /> Study Materials
             </button>
+            <button className={`sd-nav-btn${tab === 'exams'  ? ' on' : ''}`} onClick={() => switchTab('exams')}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Exam Papers
+            </button>
             <button className={`sd-nav-btn${tab === 'zoom' ? ' on' : ''}`} onClick={() => switchTab('zoom')}>
               <IcoZoom /> Live Classes
               {zoomLinks.filter(isLiveNow).length > 0 && (
@@ -1124,6 +1129,7 @@ export default function StudentDashboard() {
             {tab === 'dashboard'  && renderDashboard()}
             {tab === 'recordings' && <StudentRecord student={student} />}
             {tab === 'materials'  && <StudentMaterials student={student} />}
+            {tab === 'exams'      && <StudentExamPapers student={student} />}
             {tab === 'zoom'       && renderZoom()}
             {tab === 'profile'    && <StudentProfile />}
             {tab === 'payment'    && <MonthlyPayment embedded />}

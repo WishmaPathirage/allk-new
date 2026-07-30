@@ -214,7 +214,9 @@ function DetailModal({ payment, onClose, onApprove, onReject, onSetType }) {
               { lbl: 'Full Name',  val: payment.studentName },
               { lbl: 'Email',      val: payment.email },
               { lbl: 'Phone',      val: payment.phone },
+              { lbl: 'District',   val: payment.district },
               { lbl: 'Address',    val: payment.address },
+              { lbl: 'Batch',      val: payment.batch },
               { lbl: 'Month',      val: fmtMonth(payment.month) },
               { lbl: 'Submitted',  val: `${fmtDate(payment.submittedAt)} ${fmtTime(payment.submittedAt)}` },
             ].map(({ lbl, val }) => (
@@ -290,8 +292,10 @@ function downloadPDF(students, monthLabel) {
         <div class="type-pill" style="background:${c.bg};color:${c.color}">${typeLabel}</div>
       </div>
       <div class="name">${s.studentName || '—'}</div>
+      <div class="row"><span class="lbl">Email</span><span class="val">${s.email || '—'}</span></div>
       <div class="row"><span class="lbl">Phone</span><span class="val">${s.phone || '—'}</span></div>
       <div class="row"><span class="lbl">Address</span><span class="val">${s.address || '—'}</span></div>
+      <div class="row"><span class="lbl">District</span><span class="val">${s.district || '—'}</span></div>
       <div class="row"><span class="lbl">Batch</span><span class="val">${s.batch || '—'}</span></div>
       <div class="row"><span class="lbl">Subjects</span><span class="val subjects">${subjects}</span></div>
       <div class="row"><span class="lbl">Month</span><span class="val">${s._monthLabel || '—'}</span></div>
@@ -390,9 +394,11 @@ export default function MonthlyPaymentsPage({ toast, regs = [] }) {
     return {
       ...p,
       _resolvedStudentId: p.studentId || reg?.studentId || null,
-      address: p.address || reg?.address || null,
-      batch:   p.batch   || reg?.batch   || null,
-      phone:   p.phone   || reg?.phone   || null,
+      address:  p.address  || reg?.address  || null,
+      district: p.district || reg?.district || null,
+      batch:    p.batch    || reg?.batch    || null,
+      phone:    p.phone    || reg?.phone    || null,
+      email:    p.email    || reg?.email    || null,
     };
   };
 

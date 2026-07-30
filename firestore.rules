@@ -1,0 +1,239 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function userEmail() {
+      return request.auth.token.email;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'admin@al.lk';
+    }
+
+    function isTeacher() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/teachers/$(request.auth.uid));
+    }
+
+    function teacherData() {
+      return get(/databases/$(database)/documents/teachers/$(request.auth.uid)).data;
+    }
+
+    function isTeacherWithId(teacherId) {
+      return isTeacher() && teacherData().id == teacherId;
+    }
+
+    function isValidString(val, maxLen) {
+      return val is string && val.size() > 0 && val.size() <= maxLen;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
+    }
+
+    function isValidPhone(phone) {
+      return phone is string && phone.matches('^[0-9+()\\-\\s]{7,20}$');
+    }
+
+    function notUpdating(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields.toSet());
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /teachers/{teacherUid} {
+      allow read: if true;
+
+      allow create: if isAdmin() &&
+        request.resource.data.keys().hasAll(['id', 'name', 'subject', 'stream', 'email', 'createdAt']) &&
+        isValidString(request.resource.data.name, 100) &&
+        isValidString(request.resource.data.id, 30) &&
+        isValidEmail(request.resource.data.email) &&
+        request.resource.data.createdAt == request.time;
+
+      allow update: if isAdmin() &&
+        notUpdating(['id', 'email', 'createdAt']);
+
+      allow delete: if isAdmin();
+    }
+
+    match /registrations/{regId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.email == userEmail()) ||
+        (resource.data.keys().hasAll(['studentId']) && resource.data.studentId != null && resource.data.studentId != '') ||
+        (isSignedIn() && request.auth.uid in resource.data.teacherUids);
+
+      allow create: if
+        request.resource.data.keys().hasAll(['studentName', 'email', 'phone', 'batch', 'status', 'submittedAt']) &&
+        isValidString(request.resource.data.studentName, 100) &&
+        isValidEmail(request.resource.data.email) &&
+        isValidPhone(request.resource.data.phone) &&
+        isValidString(request.resource.data.batch, 10) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.submittedAt == request.time &&
+        !('studentId' in request.resource.data) &&
+        !('approvedAt' in request.resource.data) &&
+        !('approvedBy' in request.resource.data);
+
+      allow update: if isAdmin() ||
+        (isSignedIn() && resource.data.email == userEmail() &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['photoURL']));
+      allow delete: if isAdmin();
+    }
+
+    match /monthly_payments/{paymentId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.email == userEmail());
+
+      allow create: if
+        request.resource.data.keys().hasAll(['email', 'month', 'status', 'submittedAt']) &&
+        isValidEmail(request.resource.data.email) &&
+        isValidString(request.resource.data.month, 20) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.submittedAt == request.time &&
+        !('approvedAt' in request.resource.data) &&
+        !('approvedBy' in request.resource.data);
+
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /materials/{materialId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isAdmin() || isTeacherWithId(request.resource.data.teacherId)) &&
+        request.resource.data.keys().hasAll(['teacherId', 'teacherName', 'title', 'fileUrl', 'storagePath', 'uploadedAt']) &&
+        isValidString(request.resource.data.title, 200) &&
+        request.resource.data.uploadedAt == request.time;
+
+      allow update: if isAdmin() ||
+        (isTeacherWithId(resource.data.teacherId) &&
+         notUpdating(['teacherId', 'fileUrl', 'storagePath', 'uploadedAt']));
+
+      allow delete: if isAdmin() || isTeacherWithId(resource.data.teacherId);
+    }
+
+    match /material_folders/{folderId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isAdmin() || isTeacherWithId(request.resource.data.teacherId)) &&
+        request.resource.data.keys().hasAll(['teacherId', 'name', 'createdAt']) &&
+        isValidString(request.resource.data.name, 100) &&
+        request.resource.data.createdAt == request.time;
+
+      allow update: if isAdmin() ||
+        (isTeacherWithId(resource.data.teacherId) &&
+         notUpdating(['teacherId', 'createdAt']));
+
+      allow delete: if isAdmin() || isTeacherWithId(resource.data.teacherId);
+    }
+
+    match /exam_papers/{paperId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isAdmin() || isTeacherWithId(request.resource.data.teacherId)) &&
+        request.resource.data.keys().hasAll(['teacherId', 'teacherName', 'title', 'itemType', 'uploadedAt']) &&
+        isValidString(request.resource.data.title, 200) &&
+        request.resource.data.itemType in ['pdf', 'quiz'] &&
+        request.resource.data.uploadedAt == request.time &&
+        (
+          (request.resource.data.itemType == 'pdf' &&
+           request.resource.data.keys().hasAll(['fileUrl', 'storagePath']) &&
+           isValidString(request.resource.data.fileUrl, 2000) &&
+           isValidString(request.resource.data.storagePath, 500)) ||
+          (request.resource.data.itemType == 'quiz' &&
+           request.resource.data.keys().hasAll(['quizUrl']) &&
+           request.resource.data.quizUrl.matches('^https?://.+'))
+        );
+
+      allow update: if isAdmin() ||
+        (isTeacherWithId(resource.data.teacherId) &&
+         notUpdating(['teacherId', 'itemType', 'fileUrl', 'storagePath', 'quizUrl', 'uploadedAt']));
+
+      allow delete: if isAdmin() || isTeacherWithId(resource.data.teacherId);
+    }
+
+    match /exam_folders/{folderId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isAdmin() || isTeacherWithId(request.resource.data.teacherId)) &&
+        request.resource.data.keys().hasAll(['teacherId', 'name', 'createdAt']) &&
+        isValidString(request.resource.data.name, 100) &&
+        request.resource.data.createdAt == request.time;
+
+      allow update: if isAdmin() ||
+        (isTeacherWithId(resource.data.teacherId) &&
+         notUpdating(['teacherId', 'createdAt']));
+
+      allow delete: if isAdmin() || isTeacherWithId(resource.data.teacherId);
+    }
+
+    match /records/{recordId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isAdmin() || isTeacherWithId(request.resource.data.teacherId)) &&
+        request.resource.data.keys().hasAll(['teacherId', 'teacherName', 'title', 'uploadedAt']) &&
+        isValidString(request.resource.data.title, 200) &&
+        request.resource.data.uploadedAt == request.time;
+
+      allow update: if isAdmin() ||
+        (isTeacherWithId(resource.data.teacherId) &&
+         notUpdating(['teacherId', 'fileUrl', 'storagePath', 'uploadedAt']));
+
+      allow delete: if isAdmin() || isTeacherWithId(resource.data.teacherId);
+    }
+
+    match /record_folders/{folderId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isAdmin() || isTeacherWithId(request.resource.data.teacherId)) &&
+        request.resource.data.keys().hasAll(['teacherId', 'name', 'createdAt']) &&
+        isValidString(request.resource.data.name, 100) &&
+        request.resource.data.createdAt == request.time;
+
+      allow update: if isAdmin() ||
+        (isTeacherWithId(resource.data.teacherId) &&
+         notUpdating(['teacherId', 'createdAt']));
+
+      allow delete: if isAdmin() || isTeacherWithId(resource.data.teacherId);
+    }
+
+    match /registered_emails/{emailKey} {
+      allow read: if true;
+      allow create: if isValidEmail(request.resource.data.email);
+      allow delete: if isAdmin();
+      allow update: if isAdmin();
+    }
+
+    match /deleted_students/{emailKey} {
+      allow read: if true;
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin() ||
+        (isSignedIn() && resource.data.email == userEmail());
+    }
+
+    match /zoom_links/{linkId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isTeacher() || isAdmin()) &&
+        request.resource.data.keys().hasAll(['title', 'sessionDate', 'teacherIds', 'updatedAt']) &&
+        isValidString(request.resource.data.title, 200) &&
+        request.resource.data.updatedAt == request.time;
+
+      allow update: if isAdmin() ||
+        (isTeacher() && request.resource.data.updatedAt == request.time);
+
+      allow delete: if isAdmin() || isTeacher();
+    }
+  }
+}

@@ -5,6 +5,14 @@ import { db, storage } from '../services/firebase';
 
 const BATCHES = ['2028', '2029', '2030'];
 
+const DISTRICTS = [
+  'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle',
+  'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle',
+  'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala',
+  'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura',
+  'Trincomalee', 'Vavuniya',
+];
+
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -251,7 +259,7 @@ function ErrMsg({ msg }) {
 }
 
 export default function RegistrationModal({ classInfo, onClose }) {
-  const [form, setForm] = useState({ studentName: '', email: '', address: '', phone: '', batch: '', month: '' });
+  const [form, setForm] = useState({ studentName: '', email: '', address: '', district: '', phone: '', batch: '', month: '' });
   const [selectedTeachers, setSelectedTeachers] = useState(
     classInfo?.teacher ? [classInfo.teacher.id] : []
   );
@@ -302,6 +310,7 @@ export default function RegistrationModal({ classInfo, onClose }) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errs.email = 'Enter a valid email address.';
     if (!form.address.trim())      errs.address = 'Address is required.';
     else if (!/^[a-zA-Z0-9\s'.,\-/#&()]+$/.test(form.address.trim())) errs.address = 'Address must be in English characters only.';
+    if (!form.district)            errs.district = 'Please select your district.';
     if (!form.phone.trim())        errs.phone = 'Phone number is required.';
     if (!form.batch)               errs.batch = 'Please select your A/L batch.';
     if (!form.month)               errs.month = 'Please select your registration month.';
@@ -358,6 +367,7 @@ export default function RegistrationModal({ classInfo, onClose }) {
         studentName:           form.studentName.trim(),
         email:                 form.email.trim(),
         address:               form.address.trim(),
+        district:              form.district,
         phone:                 form.phone.trim(),
         batch:                 form.batch,
         registrationMonth:     form.month,
@@ -504,16 +514,30 @@ export default function RegistrationModal({ classInfo, onClose }) {
                   </div>
                 </div>
 
+                <div className="rm-field">
+                  <label className="rm-lbl">Address <span className="rm-req">*</span></label>
+                  <input
+                    className={`rm-input${errors.address ? ' err' : ''}`}
+                    placeholder="No. 12, Galle Road, Colombo 03"
+                    value={form.address}
+                    onChange={e => { setForm(f => ({...f, address: e.target.value})); setErrors(er => ({...er, address: null})); }}
+                  />
+                  <ErrMsg msg={errors.address} />
+                </div>
+
                 <div className="rm-row2">
                   <div className="rm-field">
-                    <label className="rm-lbl">Address <span className="rm-req">*</span></label>
-                    <input
-                      className={`rm-input${errors.address ? ' err' : ''}`}
-                      placeholder="No. 12, Galle Road, Colombo 03"
-                      value={form.address}
-                      onChange={e => { setForm(f => ({...f, address: e.target.value})); setErrors(er => ({...er, address: null})); }}
-                    />
-                    <ErrMsg msg={errors.address} />
+                    <label className="rm-lbl">District <span className="rm-req">*</span></label>
+                    <select
+                      className={`rm-input${errors.district ? ' err' : ''}`}
+                      style={{cursor:'pointer'}}
+                      value={form.district}
+                      onChange={e => { setForm(f => ({...f, district: e.target.value})); setErrors(er => ({...er, district: null})); }}
+                    >
+                      <option value="">Select district…</option>
+                      {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                    <ErrMsg msg={errors.district} />
                   </div>
                   <div className="rm-field">
                     <label className="rm-lbl">A/L Batch <span className="rm-req">*</span></label>

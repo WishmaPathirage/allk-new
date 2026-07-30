@@ -28,6 +28,14 @@ const streamBorder= (s) => s === 'Technology' ? 'rgba(38,128,199,.25)' : s === '
 
 const BATCHES = ['2025', '2028'];
 
+const DISTRICTS = [
+  'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle',
+  'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle',
+  'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala',
+  'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura',
+  'Trincomalee', 'Vavuniya',
+];
+
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -311,6 +319,8 @@ export default function StudentRegister() {
     studentName: '',
     email: '',
     phone: '',
+    address: '',
+    district: '',
     batch: '',
     month: '',
   });
@@ -339,16 +349,20 @@ export default function StudentRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const name  = form.studentName.trim();
-    const email = form.email.trim().toLowerCase();
-    const phone = form.phone.trim();
-    const batch = form.batch;
-    const month = form.month;
+    const name     = form.studentName.trim();
+    const email    = form.email.trim().toLowerCase();
+    const phone    = form.phone.trim();
+    const address  = form.address.trim();
+    const district = form.district;
+    const batch    = form.batch;
+    const month    = form.month;
 
     if (!name)                       { setError('Please enter your full name.');          return; }
     if (!email)                      { setError('Please enter your email address.');       return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Please enter a valid email address.'); return; }
     if (!phone)                      { setError('Please enter your phone number.');        return; }
+    if (!address)                    { setError('Please enter your address.');            return; }
+    if (!district)                   { setError('Please select your district.');          return; }
     if (!batch)                      { setError('Please select your batch year.');         return; }
     if (!month)                      { setError('Please select your registration month.'); return; }
     if (selectedTeachers.length === 0) { setError('Please select at least one subject.'); return; }
@@ -393,6 +407,8 @@ export default function StudentRegister() {
         studentName: name,
         email,
         phone,
+        address,
+        district,
         batch,
         registrationMonth: month,
         registrationMonthKey: monthKey,
@@ -567,6 +583,37 @@ export default function StudentRegister() {
                         onChange={e => setField('phone', e.target.value)}
                       />
                     </div>
+                  </div>
+
+                  {/* Address */}
+                  <div className="ar-field">
+                    <label className="ar-label">Address <span className="ar-label-req">*</span></label>
+                    <div className="ar-input-wrap">
+                      <span className="ar-input-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      </span>
+                      <input
+                        className="ar-input"
+                        placeholder="No. 12, Galle Road, Colombo 03"
+                        value={form.address}
+                        onChange={e => setField('address', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* District */}
+                  <div className="ar-field">
+                    <label className="ar-label">District <span className="ar-label-req">*</span></label>
+                    <select
+                      className="ar-select"
+                      value={form.district}
+                      onChange={e => setField('district', e.target.value)}
+                    >
+                      <option value="">Select your district…</option>
+                      {DISTRICTS.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Batch */}

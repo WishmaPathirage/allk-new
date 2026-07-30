@@ -18,6 +18,14 @@ const ALL_TEACHERS = [
 
 const STREAM_COLORS = { Technology: '#2680c7', Commerce: '#27956b', Arts: '#c9720c' };
 
+const DISTRICTS = [
+  'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle',
+  'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle',
+  'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala',
+  'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura',
+  'Trincomalee', 'Vavuniya',
+];
+
 /* Generate month options: all 12 months of the current year.
    Past months are marked so they can be rendered as disabled. */
 const getMonthOptions = () => {
@@ -266,6 +274,7 @@ export default function MonthlyPayment({ embedded = false }) {
   const [email,            setEmail]             = useState('');
   const [phone,            setPhone]             = useState('');
   const [address,          setAddress]           = useState('');
+  const [district,         setDistrict]          = useState('');
   const [month,            setMonth]             = useState(currentMonthValue);
   const [selectedTeachers, setSelectedTeachers]  = useState([]);
   const [file,             setFile]              = useState(null);
@@ -281,6 +290,7 @@ export default function MonthlyPayment({ embedded = false }) {
       if (data.email)       setEmail(data.email);
       if (data.phone)       setPhone(data.phone);
       if (data.address)     setAddress(data.address);
+      if (data.district)    setDistrict(data.district);
       if (data.selectedTeachers?.length) setSelectedTeachers(data.selectedTeachers);
       // Never restore a past month from cache — keep the current-month default
     };
@@ -327,6 +337,7 @@ export default function MonthlyPayment({ embedded = false }) {
     if (!email.trim())              { alert('Please enter your email'); return; }
     if (!phone.trim())              { alert('Please enter your phone number'); return; }
     if (!address.trim())            { alert('Please enter your address'); return; }
+    if (!district)                  { alert('Please select your district'); return; }
     if (selectedTeachers.length === 0) { alert('Please select at least one teacher'); return; }
     if (!file)                      { alert('Please upload your payment slip'); return; }
 
@@ -344,6 +355,7 @@ export default function MonthlyPayment({ embedded = false }) {
         email:               email.trim().toLowerCase(),
         phone:               phone.trim(),
         address:             address.trim(),
+        district,
         month,
         selectedTeachers,
         paymentSlipUrl:      url,
@@ -499,9 +511,16 @@ export default function MonthlyPayment({ embedded = false }) {
                     <input className="mp-input" type="tel" placeholder="07X XXX XXXX" value={phone} onChange={e => setPhone(e.target.value)} />
                   </div>
                   <div className="mp-field" style={{ gridColumn: 'span 1' }}>
-                    <label className="mp-label">Address *</label>
-                    <input className="mp-input" placeholder="No. 12, Main Street, Colombo" value={address} onChange={e => setAddress(e.target.value)} />
+                    <label className="mp-label">District *</label>
+                    <select className="mp-select" value={district} onChange={e => setDistrict(e.target.value)}>
+                      <option value="">Select district…</option>
+                      {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
                   </div>
+                </div>
+                <div className="mp-field">
+                  <label className="mp-label">Address *</label>
+                  <input className="mp-input" placeholder="No. 12, Main Street, Colombo" value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
               </div>
             </div>
