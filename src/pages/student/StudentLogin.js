@@ -5,7 +5,6 @@ import { auth, db } from '../../services/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   .al-login-page {
@@ -262,8 +261,13 @@ const css = `
     font-size: 13px;
     color: #ff7a70;
     line-height: 1.5;
+    animation: al-error-in .25s ease;
   }
   .al-error svg { flex-shrink: 0; margin-top: 1px; }
+  @keyframes al-error-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .al-divider {
     display: flex; align-items: center; gap: 14px;

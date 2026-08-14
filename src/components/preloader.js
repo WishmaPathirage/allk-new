@@ -58,8 +58,6 @@ export default function Preloader({ onComplete }) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
-
         .preloader {
           position: fixed;
           inset: 0;

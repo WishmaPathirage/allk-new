@@ -5,7 +5,6 @@ import { auth, db } from '../../services/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   .tl-page {
@@ -135,8 +134,13 @@ const css = `
     margin-top: 16px; display: flex; align-items: flex-start; gap: 10px;
     background: rgba(255,60,46,.08); border: 1px solid rgba(255,60,46,.2);
     border-radius: 11px; padding: 13px 15px; font-size: 13px; color: #ff7a70; line-height: 1.5;
+    animation: tl-error-in .25s ease;
   }
   .tl-error svg { flex-shrink: 0; margin-top: 1px; }
+  @keyframes tl-error-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .tl-back {
     display: inline-flex; align-items: center; gap: 6px;
