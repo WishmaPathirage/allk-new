@@ -9,16 +9,18 @@ import { onAuthStateChanged } from 'firebase/auth';
 // import ImgICT        from '../../assets/ICT.webp';
 // import ImgBS         from '../../assets/BS.webp';
 // import ImgAccounting from '../../assets/ACCOUNTING.webp';
-import ImgEcon       from '../../assets/ECON.webp';
-import ImgGeo        from '../../assets/GEOGRAPHY.webp';
-import ImgPolitical  from '../../assets/POLITICAL.webp';
-import ImgMedia      from '../../assets/MEDIA.webp';
+import ImgEcon       from '../../assets/econ.jpg.jpeg';
+import ImgGeo        from '../../assets/geo.jpg.jpeg';
+import ImgPolitical  from '../../assets/poli.jpg.jpeg';
+import ImgMedia      from '../../assets/media.jpg.jpeg';
+import ImgSinhala    from '../../assets/sinhala.jpg.jpeg';
 
 const TEACHER_IMG = {
   // et: ImgET, sft: ImgSFT, ict: ImgICT, bs: ImgBS,
   // accounting: ImgAccounting,
   econ: ImgEcon, geo: ImgGeo,
   political: ImgPolitical, media: ImgMedia,
+  sinhala: ImgSinhala,
 };
 
 const ALL_TEACHERS = [
@@ -34,8 +36,6 @@ const ALL_TEACHERS = [
   { id: 'sinhala',   name: 'Pathum Sandanuwan with Rashmika Soorya Bandara', subject: 'Sinhala', stream: 'Arts'       },
 ];
 
-const streamColor = s => s === 'Technology' ? '#2680c7' : s === 'Commerce' ? '#27956b' : '#c9720c';
-const streamBg    = s => s === 'Technology' ? '#e8f4fd' : s === 'Commerce' ? '#e8f8f0' : '#fdf0e8';
 const streamGrad  = s => s === 'Technology'
   ? 'linear-gradient(to right, #e0f2fe 0%, #0284c7 45%, #0369a1 100%)'
   : s === 'Commerce'
@@ -81,76 +81,18 @@ const css = `
 
   /* Hero */
   .sp-hero-container {
-    display: flex;
-    align-items: center;
-    min-height: 160px;
-    height: 160px;
-    overflow: hidden;
     position: relative;
-  }
-  .sp-hero-img-wrap {
-    position: absolute;
-    right: 5%;
-    bottom: 0;
-    top: 0;
-    height: 100%;
-    width: 220px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
     overflow: hidden;
-    z-index: 10;
+    aspect-ratio: 5.6 / 1;
   }
-  .sp-hero-img {
+  .sp-hero-banner-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    width: auto;
-    object-fit: contain;
-    mix-blend-mode: multiply;
-    filter: contrast(1.2) brightness(1.08);
+    object-fit: cover;
+    object-position: center;
     display: block;
-  }
-  .sp-hero-img-placeholder {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: auto;
-    margin-top: auto;
-  }
-  .sp-hero { padding: 0 28px; display: flex; align-items: center; justify-content: center; flex: 1; }
-  .sp-hero-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    flex: 1;
-    margin-right: 220px;
-    padding-left: 20px;
-  }
-  .sp-hero-subject {
-    font-size: 64px;
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 2px;
-    line-height: 1.0;
-    text-transform: uppercase;
-    letter-spacing: 0.01em;
-  }
-  .sp-hero-teacher {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 6px;
-  }
-  .sp-hero-badges  { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; justify-content: center; }
-  .sp-hero-badge   {
-    font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 99px;
-    background: rgba(255,255,255,.15); color: rgba(255,255,255,.9);
-    border: 1px solid rgba(255,255,255,.2);
   }
 
   /* Tab bar */
@@ -373,14 +315,6 @@ const css = `
 
   @media (max-width: 768px) {
     .sp-topbar { padding: 12px 14px; }
-    .sp-hero-container { min-height: 120px; height: 120px; }
-    .sp-hero-img-wrap { height: 100%; width: 110px; right: 10px; bottom: 0; top: 0; }
-    .sp-hero-img-placeholder { width: 70px; height: 70px; margin-bottom: auto; margin-top: auto; }
-    .sp-hero { padding: 0 16px; }
-    .sp-hero-info { margin-right: 110px; padding-left: 0; }
-    .sp-hero-subject { font-size: 32px; }
-    .sp-hero-teacher { font-size: 14px; margin-bottom: 2px; }
-    .sp-hero-badges { margin-top: 4px; }
     .sp-tab-bar { padding: 0 14px; }
     .sp-tab { padding: 14px 14px; font-size: 13px; }
     .sp-body { padding: 16px 14px 56px; }
@@ -880,27 +814,13 @@ export default function SubjectPage() {
 
         {/* Hero banner */}
         <div className="sp-hero-container" style={{ background: streamGrad(teacher.stream) }}>
-          <div className="sp-hero">
-            <div className="sp-hero-info">
-              <div className="sp-hero-subject">{(teacher.subject || '').toUpperCase()}</div>
-              <div className="sp-hero-teacher">{teacher.name}</div>
-              <div className="sp-hero-badges">
-                <span className="sp-hero-badge" style={{ background: streamBg(teacher.stream), color: streamColor(teacher.stream), border: 'none' }}>{teacher.stream}</span>
-                <span className="sp-hero-badge">{records.length} video{records.length !== 1 ? 's' : ''}</span>
-                <span className="sp-hero-badge">{materials.length} file{materials.length !== 1 ? 's' : ''}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="sp-hero-img-wrap">
-            {TEACHER_IMG[teacherId] ? (
-              <img className="sp-hero-img" src={TEACHER_IMG[teacherId]} alt={teacher.name} />
-            ) : (
-              <div className="sp-hero-img-placeholder">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-            )}
-          </div>
+          {TEACHER_IMG[teacherId] && (
+            <img
+              className="sp-hero-banner-img"
+              src={TEACHER_IMG[teacherId]}
+              alt={`${teacher.subject} - ${teacher.name}`}
+            />
+          )}
         </div>
 
         {/* Tab bar */}
