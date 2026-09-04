@@ -14,6 +14,7 @@ const ALL_TEACHERS = [
   { id: 'geo',        name: 'Sameera Ekanayake',       subject: 'Geography',              stream: 'Arts'       },
   { id: 'political',  name: 'Amila Nishan Pitiduwa',   subject: 'Political Science',      stream: 'Arts'       },
   { id: 'media',      name: 'Praveen Kumarage',        subject: 'Media',                  stream: 'Arts'       },
+  { id: 'sinhala',    name: 'Pathum Sandanuwan with Rashmika Soorya Bandara', subject: 'Sinhala', stream: 'Arts' },
 ];
 
 const STREAM_COLORS = { Technology: '#2680c7', Commerce: '#27956b', Arts: '#c9720c' };

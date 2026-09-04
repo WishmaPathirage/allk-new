@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import GroupImg from '../assets/GroupImg.webp';
+import { useStudentCount, formatStatLabel } from '../hooks/useLiveStats';
 
 
 const css = `
@@ -262,6 +263,8 @@ export default function AboutUs() {
   const photoRef   = useRef(null);
   const textRef    = useRef(null);
   const checksRef  = useRef([]);
+  const studentCount = useStudentCount();
+  const activeStudentsLabel = formatStatLabel(studentCount) || '44K+';
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -331,7 +334,7 @@ export default function AboutUs() {
             {/* stats above checklist */}
             <div className="au-stats-row">
               <div className="au-stat">
-                <span className="au-stat-num">44K+</span>
+                <span className="au-stat-num">{activeStudentsLabel}</span>
                 <span className="au-stat-lbl">Active Students</span>
               </div>
               <div className="au-stat">

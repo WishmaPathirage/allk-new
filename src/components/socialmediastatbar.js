@@ -1,28 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useYouTubeStats, useStudentCount, formatStatNumber } from '../hooks/useLiveStats';
 
-const stats = [
+const FALLBACK_STATS = [
   {
-    value: "44K+", label: "Facebook Followers", count: 82, suffix: "K+",
+    label: "Facebook Followers", count: 82, suffix: "K+",
     accent: "#4F8EF7",
     icon: (<svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>),
   },
   {
-    value: "22K+", label: "YT Subscribers", count: 44, suffix: "K+",
+    label: "YT Subscribers", count: 44, suffix: "K+",
     accent: "#ff3c2e",
     icon: (<svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.96-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff"/></svg>),
   },
   {
-    value: "2.1M+", label: "YouTube Views", count: 4.7, suffix: "M+",
+    label: "YouTube Views", count: 4.7, suffix: "M+",
     accent: "#FF8C00",
     icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>),
   },
   {
-    value: "15K+", label: "TikTok Followers", count: 15, suffix: "K+",
+    label: "TikTok Followers", count: 15, suffix: "K+",
     accent: "#fe2c55",
     icon: (<svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.19 8.19 0 0 0 4.79 1.54V6.79a4.85 4.85 0 0 1-1.02-.1z"/></svg>),
   },
   {
-    value: "1.2K+", label: "LMS Users", count: 24, suffix: "K+",
+    label: "LMS Users", count: 24, suffix: "K+",
     accent: "#A855F7",
     icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>),
   },
@@ -292,10 +293,6 @@ const css = `
 `;
 
 const barWidths = ['78%', '56%', '94%', '40%', '50%'];
-const tickerContent = [
-  '82K Facebook Followers', '44K YouTube Subscribers', '4.7M YouTube Views', '15K TikTok Followers', '24K LMS Users',
-  '82K Facebook Followers', '44K YouTube Subscribers', '4.7M YouTube Views', '15K TikTok Followers', '24K LMS Users',
-];
 
 function StatCard({ stat, index }) {
   const [started, setStarted] = useState(false);
@@ -354,6 +351,26 @@ function StatCard({ stat, index }) {
 }
 
 export default function SocialStats() {
+  const yt = useYouTubeStats();
+  const studentCount = useStudentCount();
+
+  const stats = useMemo(() => {
+    const ytSubs  = formatStatNumber(yt?.subscribers);
+    const ytViews = formatStatNumber(yt?.views);
+    const students = formatStatNumber(studentCount);
+    return FALLBACK_STATS.map(s => {
+      if (s.label === 'YT Subscribers' && ytSubs)  return { ...s, count: ytSubs.count, suffix: ytSubs.suffix };
+      if (s.label === 'YouTube Views'  && ytViews) return { ...s, count: ytViews.count, suffix: ytViews.suffix };
+      if (s.label === 'LMS Users'      && students) return { ...s, count: students.count, suffix: students.suffix };
+      return s;
+    });
+  }, [yt, studentCount]);
+
+  const tickerContent = useMemo(
+    () => stats.map(s => `${Number.isInteger(s.count) ? s.count : s.count.toFixed(1)}${s.suffix} ${s.label}`),
+    [stats]
+  );
+
   return (
     <section className="ss-section" id="social-stats">
       <style>{css}</style>
